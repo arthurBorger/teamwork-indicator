@@ -65,24 +65,55 @@
         return table;
       }
 
-      btn.addEventListener("click", () => {
-        if (!workbook) return;
+  btn.addEventListener("click", () => {
+    if (!workbook) return;
 
-        // Use first sheet
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
 
-        // Get 2D array (rows/cols)
-        const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    // Read sheet as 2D array
+    const data = XLSX.utils.sheet_to_json(sheet, {
+      header: 1,
+      defval: ""
+    });
 
-        const transposed = transpose2D(data);
+    if (data.length < 2) {
+      alert("Sheet has no data");
+      return;
+    }
 
-        output.innerHTML = "";
-        output.appendChild(document.createTextNode(`Sheet: ${sheetName} (transposed)`));
-        output.appendChild(document.createElement("br"));
-        output.appendChild(document.createElement("br"));
-        output.appendChild(toHtmlTable(transposed));
-      });
+    const header = data[0];
+    const rows = data.slice(1);
+
+    // Find column index for "Gruppenummer"
+    const groupColIndex = header.indexOf("Gruppenummer");
+
+    if (groupColIndex === -1) {
+      alert('Column "Gruppenummer" not found');
+      return;
+    }
+
+    // Sort rows numerically by Gruppenummer
+    rows.sort((a, b) => {
+      const aVal = Number(a[groupColIndex]);
+      const bVal = Number(b[groupColIndex]);
+      return aVal - bVal;
+    });
+
+    // Rebuild sorted table (header + rows)
+    const sortedData = [header, ...rows];
+
+    // Transpose
+    const transposed = transpose2D(sortedData);
+
+    output.innerHTML = "";
+    output.appendChild(
+      document.createTextNode(`Sheet: ${sheetName} (sorted by Gruppenummer, then transposed)`)
+    );
+    output.appendChild(document.createElement("br"));
+    output.appendChild(document.createElement("br"));
+    output.appendChild(toHtmlTable(transposed));
+  });
     </script>
   </body>
 </html>

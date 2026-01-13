@@ -1,6 +1,7 @@
 import { transpose2D } from "./matrix.js";
 import { toHtmlTable } from "./table.js";
-import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn } from "./excel.js";
+import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn, deleteColumnByName } from "./excel.js";
+const columnNamesToDelete = ["ID", "Starttidspunkt", "Fullføringstidspunkt", "E-postadresse", "Navn", "Tidspunkt for siste endring"];
 function getEl(id) {
     const el = document.getElementById(id);
     if (!el)
@@ -32,8 +33,12 @@ btn.addEventListener("click", () => {
     try {
         const sheetName = getFirstSheetName(workbook);
         const data = readSheetAsMatrix(workbook, sheetName);
-        const sorted = sortRowsByNumericColumn(data, "Gruppenummer");
-        const transposed = transpose2D(sorted);
+        let table = sortRowsByNumericColumn(data, "Gruppenummer");
+        const columnsToDelete = [...columnNamesToDelete, "ID"];
+        for (const name of columnsToDelete) {
+            table = deleteColumnByName(table, name);
+        }
+        const transposed = transpose2D(table);
         output.innerHTML = "";
         output.appendChild(document.createTextNode(`Sheet: ${sheetName} (sorted by Gruppenummer, then transposed)`));
         output.appendChild(document.createElement("br"));

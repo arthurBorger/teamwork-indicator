@@ -5,8 +5,11 @@ import {
   getFirstSheetName,
   readSheetAsMatrix,
   sortRowsByNumericColumn,
-  type Workbook
+  type Workbook,
+  deleteColumnByName
 } from "./excel.js";
+
+const columnNamesToDelete = ["ID", "Starttidspunkt", "Fullføringstidspunkt", "E-postadresse", "Navn", "Tidspunkt for siste endring"];
 
 function getEl<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -39,12 +42,18 @@ fileInput.addEventListener("change", async () => {
 btn.addEventListener("click", () => {
   if (!workbook) return;
 
-  try {
+    try {
     const sheetName = getFirstSheetName(workbook);
     const data = readSheetAsMatrix(workbook, sheetName);
 
-    const sorted = sortRowsByNumericColumn(data, "Gruppenummer");
-    const transposed = transpose2D(sorted);
+    let table = sortRowsByNumericColumn(data, "Gruppenummer");
+
+    const columnsToDelete = [...columnNamesToDelete, "ID"];
+    for (const name of columnsToDelete) {
+      table = deleteColumnByName(table, name);
+    }
+
+    const transposed = transpose2D(table);
 
     output.innerHTML = "";
     output.appendChild(

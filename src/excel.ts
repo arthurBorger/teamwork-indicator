@@ -37,3 +37,18 @@ export function sortRowsByNumericColumn(data: Matrix, columnName: string): Matri
   rows.sort((a, b) => Number(a[colIndex]) - Number(b[colIndex]));
   return [header, ...rows];
 }
+
+export function deleteColumnByName(data: Matrix, columnName: string): Matrix {
+  if (data.length === 0) return data;
+
+  const header = data[0]?.map(String) ?? [];
+  const colIndex = header.indexOf(columnName);
+
+  if (colIndex === -1) return data;
+
+  return data.map(row => [
+    ...row.slice(0, colIndex),
+    ...row.slice(colIndex + 1)
+  ]);
+}
+

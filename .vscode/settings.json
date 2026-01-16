@@ -1,0 +1,15 @@
+{
+  // Format on save
+  "editor.formatOnSave": true,
+
+  // Use Prettier as the formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Let ESLint apply auto-fixable rules on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  // Ensure ESLint runs on TS files
+  "eslint.validate": ["javascript", "typescript"]
+}

@@ -1,6 +1,7 @@
 import { transpose2D } from "./matrix.js";
 import { toHtmlTable } from "./table.js";
 import { getGroupNumbers } from "./utils.js";
+import { calcAvgForMember } from "./scoring.js";
 import {
   readWorkbookFromFile,
   getFirstSheetName,
@@ -73,6 +74,8 @@ btn.addEventListener("click", () => {
     }
 
     const transposed = transpose2D(table);
+    const A_score = calcAvgForMember(transposed, [2,5,8,13,17], 1);
+    document.body.appendChild(document.createTextNode(`Average A score: ${A_score ?? "N/A"}`));
     output.appendChild(toHtmlTable(transposed));
   } catch (err) {
     alert(err instanceof Error ? err.message : String(err));

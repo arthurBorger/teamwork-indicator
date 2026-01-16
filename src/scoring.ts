@@ -1,18 +1,27 @@
-import type { Matrix } from "./matrix.js";
-import { extractLeadingNumber } from "./excel.js";
-// array from 1 to 20
-const questionRowNames = Array.from({ length: 20 }, (_, i) =>  `${i + 1}`);
-const groupNumber = "Gruppenummer";
+import type { Matrix } from './matrix.js';
+import { extractLeadingNumber } from './excel.js';
+import { Columns } from './constants/columns.js';
+
+const groupNumber = Columns.GroupNumber;
+// dimension name -> question row names
+export type DimensionConfig = Record<string, string[]>;
+// Example:
+// {
+//   "Ærlig og direkte": ["1","2","3"],
+//   "Forpliktelse til arbeidet": ["4","5","6"],
+//   "Ledelse": ["7","8","9"],
+//   "Sosialt samarbeid": ["10","11","12"]
+// }
 
 function findRowByName(matrix: Matrix, rowName: string): unknown[] {
-  const row = matrix.find(r => String(r?.[0] ?? "") === rowName);
+  const row = matrix.find((r) => String(r?.[0] ?? '') === rowName);
   if (!row) throw new Error(`Row "${rowName}" not found`);
   return row;
 }
 
 export function indexColumnsByGroup(
   transposed: Matrix,
-  groupRowName = groupNumber
+  groupRowName = groupNumber,
 ): Map<number, number[]> {
   const groupRow = findRowByName(transposed, groupRowName);
   const map = new Map<number, number[]>();
@@ -27,7 +36,7 @@ export function indexColumnsByGroup(
 
 export function countMembersByGroup(
   transposed: Matrix,
-  groupRowName = groupNumber
+  groupRowName = groupNumber,
 ): Map<number, number> {
   const groupToCols = indexColumnsByGroup(transposed, groupRowName);
   const counts = new Map<number, number>();
@@ -35,20 +44,10 @@ export function countMembersByGroup(
   return counts;
 }
 
-// dimension name -> question row names
-export type DimensionConfig = Record<string, string[]>;
-// Example:
-// {
-//   "Ærlig og direkte": ["1","2","3"],
-//   "Forpliktelse til arbeidet": ["4","5","6"],
-//   "Ledelse": ["7","8","9"],
-//   "Sosialt samarbeid": ["10","11","12"]
-// }
-
 export function scoreDimensionForGroup(
   transposed: Matrix,
   groupCols: readonly number[],
-  questionRowNames: readonly string[]
+  questionRowNames: readonly string[],
 ): number | null {
   let sum = 0;
   let n = 0;
@@ -74,13 +73,13 @@ export function scoreAllGroups(
   transposed: Matrix,
   axisOrder: readonly string[],
   dimensions: DimensionConfig,
-  groupRowName = "Gruppenummer"
+  groupRowName = 'Gruppenummer',
 ): Map<number, (number | null)[]> {
-  const groupToCols = indexColumnsByGroup(transposed, groupRowName);
+  const groupToCols = indexColumnsByGroup(transposed, groupNumber);
   const out = new Map<number, (number | null)[]>();
 
   for (const [group, cols] of groupToCols) {
-    const scores = axisOrder.map(axisName => {
+    const scores = axisOrder.map((axisName) => {
       const questions = dimensions[axisName];
       if (!questions) throw new Error(`Missing dimension config for "${axisName}"`);
       return scoreDimensionForGroup(transposed, cols, questions);
@@ -101,7 +100,7 @@ export function scoreAllGroups(
 export function calcAvgForMember(
   transposed: Matrix,
   questionRows: readonly (string | number)[],
-  memberColumnIndex: number
+  memberColumnIndex: number,
 ): number | null {
   let totalScore = 0;
   let valueCount = 0;

@@ -12,7 +12,17 @@
     <input id="file" type="file" accept=".xlsx,.xls" />
     <button id="transposeBtn" disabled>Transpose & Display</button>
 
-    <div id="output" style="margin-top: 16px;"></div>
+    <div id="output" style="margin-top: 16px"></div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "xlsx/xlsx.mjs": "/node_modules/xlsx/xlsx.mjs"
+        }
+      }
+    </script>
+
+    <script type="module" src="/dist/main.js"></script>
 
     <!-- SheetJS (xlsx) global -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>

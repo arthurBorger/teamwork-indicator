@@ -1,8 +1,6 @@
-import type { Matrix } from "./matrix.js";
-declare global {
-    const XLSX: any;
-}
-export type Workbook = any;
+import type { Matrix } from './matrix.js';
+import * as XLSX from 'xlsx/xlsx.mjs';
+export type Workbook = XLSX.WorkBook;
 export declare function readWorkbookFromFile(file: File): Promise<Workbook>;
 export declare function getFirstSheetName(workbook: Workbook): string;
 export declare function readSheetAsMatrix(workbook: Workbook, sheetName: string): Matrix;

@@ -1,7 +1,8 @@
-import { transpose2D } from "./matrix.js";
-import { toHtmlTable } from "./table.js";
-import { getGroupNumbers } from "./utils.js";
-import { calcAvgForMember } from "./scoring.js";
+import { transpose2D, type Matrix } from './matrix.js';
+import { toHtmlTable } from './table.js';
+import { getGroupNumbers } from './utils.js';
+import { calcAvgForMember } from './scoring.js';
+import { Columns } from './constants/columns.js';
 import {
   readWorkbookFromFile,
   getFirstSheetName,
@@ -10,13 +11,21 @@ import {
   type Workbook,
   deleteColumnByName,
   normalizeAllCells,
-  countUnique
-} from "./excel.js";
+  countUnique,
+} from './excel.js';
 
-const columnNamesToDelete = ["ID", "Starttidspunkt", "Fullføringstidspunkt", "E-postadresse", "Navn", "Tidspunkt for siste endring"];
-const fileInput = getEl<HTMLInputElement>("file");
-const btn = getEl<HTMLButtonElement>("transposeBtn");
-const output = getEl<HTMLDivElement>("output");
+const columnNamesToDelete = [
+  Columns.ID,
+  Columns.Start,
+  Columns.End,
+  Columns.Email,
+  Columns.Name,
+  Columns.LastChanged,
+];
+const fileInput = getEl<HTMLInputElement>('file');
+const btn = getEl<HTMLButtonElement>('transposeBtn');
+const output = getEl<HTMLDivElement>('output');
+const aRowNames = [2, 5, 8, 13, 17];
 let workbook: Workbook | null = null;
 
 function getEl<T extends HTMLElement>(id: string): T {
@@ -25,10 +34,9 @@ function getEl<T extends HTMLElement>(id: string): T {
   return el as T;
 }
 
-
-fileInput.addEventListener("change", async () => {
+fileInput.addEventListener('change', async () => {
   const file = fileInput.files?.[0];
-  output.innerHTML = "";
+  output.innerHTML = '';
   btn.disabled = true;
   workbook = null;
 
@@ -42,40 +50,41 @@ fileInput.addEventListener("change", async () => {
   }
 });
 
-btn.addEventListener("click", () => {
+btn.addEventListener('click', () => {
   if (!workbook) return;
 
   try {
-    output.innerHTML = "";
-    const columnGroupNumber = "Gruppenummer";
+    output.innerHTML = '';
 
     const sheetName = getFirstSheetName(workbook);
     const data = readSheetAsMatrix(workbook, sheetName);
 
-    let table = sortRowsByNumericColumn(data, columnGroupNumber);
+    let table = sortRowsByNumericColumn(data, Columns.GroupNumber);
     table = normalizeAllCells(table);
 
-    // transpose ONCE
     const transposedBeforeDelete = transpose2D(table);
-
-    // real group numbers from data
-    const groupNumbers = getGroupNumbers(transposedBeforeDelete, columnGroupNumber);
+    const groupNumbers = getGroupNumbers(transposedBeforeDelete);
     const groups = groupNumbers.length;
 
     output.appendChild(
-      document.createTextNode(`Found ${groups} groups: ${groupNumbers.join(", ")}`)
+      document.createTextNode(`Found ${groups} groups: ${groupNumbers.join(', ')}`),
     );
-    output.appendChild(document.createElement("br"));
-    output.appendChild(document.createElement("br"));
+    output.appendChild(document.createElement('br'));
+    output.appendChild(document.createElement('br'));
 
-    // delete meta columns (keep Gruppenummer for later scoring)
     for (const name of columnNamesToDelete) {
       table = deleteColumnByName(table, name);
     }
 
     const transposed = transpose2D(table);
-    const A_score = calcAvgForMember(transposed, [2,5,8,13,17], 1);
-    document.body.appendChild(document.createTextNode(`Average A score: ${A_score ?? "N/A"}`));
+    const A_score = calcAvgForMember(transposed, aRowNames, 1);
+
+    output.appendChild(
+      document.createTextNode(`Average A score: ${A_score ?? 'N/A'}`),
+    );
+    output.appendChild(document.createElement('br'));
+    output.appendChild(document.createElement('br'));
+
     output.appendChild(toHtmlTable(transposed));
   } catch (err) {
     alert(err instanceof Error ? err.message : String(err));

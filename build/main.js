@@ -15,6 +15,10 @@ const columnNamesToDelete = [
 const fileInput = getEl('file');
 const btn = getEl('transposeBtn');
 const output = getEl('output');
+const aRowNames = [2, 5, 8, 13, 17];
+const bRowNames = [6, 9, 12, 14, 18];
+const cRowNames = [3, 7, 10, 15, 19];
+const dRowNames = [1, 4, 11, 16, 20];
 let workbook = null;
 function getEl(id) {
     const el = document.getElementById(id);
@@ -56,8 +60,12 @@ btn.addEventListener('click', () => {
             table = deleteColumnByName(table, name);
         }
         const transposed = transpose2D(table);
-        const A_score = calcAvgForMember(transposed, [2, 5, 8, 13, 17], 1);
-        output.appendChild(document.createTextNode(`Average A score: ${A_score ?? 'N/A'}`));
+        const A_score = calcAvgForMember(transposed, aRowNames, 1);
+        const B_score = calcAvgForMember(transposed, bRowNames, 1);
+        const C_score = calcAvgForMember(transposed, cRowNames, 1);
+        const D_score = calcAvgForMember(transposed, dRowNames, 1);
+        output.appendChild(document.createTextNode(`Average A score: ${A_score ?? 'N/A'}, Average B score ${B_score ?? 'N/A'},
+         Average C score ${C_score ?? 'N/A'}, Average D score ${D_score ?? 'N/A'}`));
         output.appendChild(document.createElement('br'));
         output.appendChild(document.createElement('br'));
         output.appendChild(toHtmlTable(transposed));

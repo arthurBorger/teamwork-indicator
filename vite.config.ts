@@ -5,6 +5,6 @@ export default defineConfig({
   base: '/teamwork-indicator/',
   plugins: [tailwindcss()],
   build: {
-    outDir: 'build',
+    outDir: 'docs',
   },
 });

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-3g_QGtD8.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BKHT-bwJ.css">
+  </head>
+  <body class="pl-4 pr-4">
+    <div class="">
+      <h1 class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
+        Teamwork Indicator
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <label
+          for="file"
+          class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium shadow-sm cursor-pointer hover:bg-slate-50"
+        >
+          Choose Excel file ...
+        </label>
+        <input id="file" type="file" accept=".xlsx,.xls" class="hidden" />
+
+        <button
+          id="transposeBtn"
+          disabled
+          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-800 transition-colors"
+        >
+          Generate results
+        </button>
+      </div>
+
+      <div id="output" class="mt-2 mb-6 text-sm leading-relaxed text-slate-800 space-y-2"></div>
+
+      <div id="charts" class="flex flex-wrap gap-6 items-start"></div>
+    </div>
+
+    <div
+      id="bottomBar"
+      class="fixed bottom-0 left-0 z-50 w-full h-16 bg-(--theme-color) flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+    >
+      <a href="https://www.ntnu.no/eit" target="_blank" rel="noopener noreferrer">
+        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
+      </a>
+    </div>
+
+  </body>
+</html>

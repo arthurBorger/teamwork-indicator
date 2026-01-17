@@ -1,5 +1,6 @@
 import { extractLeadingNumber } from './excel.js';
 import { Columns } from './constants/columns.js';
+import { getGroupMembers } from './utils.js';
 const groupNumber = Columns.GroupNumber;
 // Example:
 // {
@@ -8,6 +9,15 @@ const groupNumber = Columns.GroupNumber;
 //   "Ledelse": ["7","8","9"],
 //   "Sosialt samarbeid": ["10","11","12"]
 // }
+/**
+ * Reverse a 1–7 Likert average → 7–1.
+ * Returns null if the input is null.
+ */
+export function calculateSafeScore(avg) {
+    if (avg == null)
+        return null;
+    return 8 - avg;
+}
 function findRowByName(matrix, rowName) {
     const row = matrix.find((r) => String(r?.[0] ?? '') === rowName);
     if (!row)
@@ -82,5 +92,53 @@ export function calcAvgForMember(transposed, questionRows, memberColumnIndex) {
         valueCount++;
     }
     return valueCount === 0 ? null : totalScore / valueCount;
+}
+/**
+ * Average score for ONE member (one column) on a given scale.
+ * Optionally reverse the scale.
+ */
+function computeMemberScaleScore(transposed, rowIndices, colIndex, reverse) {
+    const raw = calcAvgForMember(transposed, rowIndices, colIndex);
+    if (raw == null)
+        return null;
+    return reverse ? calculateSafeScore(raw) : raw;
+}
+/**
+ * Numeric group averages for all groups for a given scale.
+ * Returns raw numbers in a Map for further processing.
+ */
+export function calculateAverageScores(transposed, groupNumbers, questionRowNumbers, reverse) {
+    const scores = new Map();
+    for (const groupNumber of groupNumbers) {
+        const memberCols = getGroupMembers(transposed, groupNumber);
+        let sum = 0;
+        let count = 0;
+        for (const colIndex of memberCols) {
+            const score = computeMemberScaleScore(transposed, questionRowNumbers, colIndex, reverse);
+            if (score != null && !Number.isNaN(score)) {
+                sum += score;
+                count++;
+            }
+        }
+        scores.set(groupNumber, count > 0 ? sum / count : null);
+    }
+    return scores;
+}
+/**
+ * Group-level score for one scale (like Excel’s SUM(D32:L32)/H27),
+ * formatted to a fixed number of decimals.
+ */
+export function computeGroupScaleScore(transposed, groupNumber, rowIndices, reverse, decimals = 2) {
+    const memberCols = getGroupMembers(transposed, groupNumber);
+    let sum = 0;
+    let count = 0;
+    for (const colIndex of memberCols) {
+        const score = computeMemberScaleScore(transposed, rowIndices, colIndex, reverse);
+        if (score != null && !Number.isNaN(score)) {
+            sum += score;
+            count++;
+        }
+    }
+    return count > 0 ? (sum / count).toFixed(decimals) : 'N/A';
 }
 //# sourceMappingURL=scoring.js.map

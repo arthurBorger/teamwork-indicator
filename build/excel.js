@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx/xlsx.mjs';
+import * as XLSX from 'xlsx';
 // Reads an Excel workbook from a File object.
 export async function readWorkbookFromFile(file) {
     const arrayBuffer = await file.arrayBuffer();

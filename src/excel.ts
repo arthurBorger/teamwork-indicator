@@ -1,6 +1,5 @@
 import type { Matrix } from './matrix.js';
-import * as XLSX from 'xlsx/xlsx.mjs';
-
+import * as XLSX from 'xlsx';
 export type Workbook = XLSX.WorkBook;
 
 // Reads an Excel workbook from a File object.

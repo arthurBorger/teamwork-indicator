@@ -1,9 +1,11 @@
 import { transpose2D } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
-import { calcAvgForMember } from './scoring.js';
+import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
-import { getGroupMembers } from './utils.js';
+import html2canvas from 'html2canvas';
 import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn, deleteColumnByName, normalizeAllCells, } from './excel.js';
+import { Chart } from 'chart.js/auto';
+import './style.css';
 const columnNamesToDelete = [
     Columns.ID,
     Columns.Start,
@@ -27,65 +29,7 @@ function getEl(id) {
         throw new Error(`Missing element #${id}`);
     return el;
 }
-/**
- * Reverse a 1–7 Likert average → 7–1.
- * Returns null if the input is null.
- */
-export function calculateSafeScore(avg) {
-    if (avg == null)
-        return null;
-    return 8 - avg;
-}
-/**
- * Average score for ONE member (one column) on a given scale.
- * Optionally reverse the scale.
- */
-function computeMemberScaleScore(transposed, rowIndices, colIndex, reverse) {
-    const raw = calcAvgForMember(transposed, rowIndices, colIndex);
-    if (raw == null)
-        return null;
-    return reverse ? calculateSafeScore(raw) : raw;
-}
-/**
- * Group-level score for one scale (like Excel’s SUM(D32:L32)/H27),
- * formatted to a fixed number of decimals.
- */
-function computeGroupScaleScore(transposed, groupNumber, rowIndices, reverse, decimals = 3) {
-    const memberCols = getGroupMembers(transposed, groupNumber);
-    let sum = 0;
-    let count = 0;
-    for (const colIndex of memberCols) {
-        const score = computeMemberScaleScore(transposed, rowIndices, colIndex, reverse);
-        if (score != null && !Number.isNaN(score)) {
-            sum += score;
-            count++;
-        }
-    }
-    return count > 0 ? (sum / count).toFixed(decimals) : 'N/A';
-}
-/**
- * Numeric group averages for all groups for a given scale.
- * Returns raw numbers in a Map for further processing.
- */
-function calculateAverageScores(transposed, groupNumbers, questionRowNumbers, reverse) {
-    const scores = new Map();
-    for (const groupNumber of groupNumbers) {
-        const memberCols = getGroupMembers(transposed, groupNumber);
-        let sum = 0;
-        let count = 0;
-        for (const colIndex of memberCols) {
-            const score = computeMemberScaleScore(transposed, questionRowNumbers, colIndex, reverse);
-            if (score != null && !Number.isNaN(score)) {
-                sum += score;
-                count++;
-            }
-        }
-        scores.set(groupNumber, count > 0 ? sum / count : null);
-    }
-    return scores;
-}
 function buildGroupRadarScores(transposed, groupNumbers) {
-    // Adjust reverse flags here to match Excel
     const managementMap = calculateAverageScores(transposed, groupNumbers, managmentRowNames, 
     /* reverse */ true);
     const honestMap = calculateAverageScores(transposed, groupNumbers, honestAndDirectRowNames, 
@@ -111,11 +55,136 @@ const radarLabels = [
     'Ledelse',
     'Sosialt samarbeid',
 ];
+// ---------- Small DOM helper factories ----------
+function createGroupWrapper(container) {
+    const wrapper = document.createElement('div');
+    wrapper.style.margin = '24px auto';
+    wrapper.style.width = '1300px';
+    container.appendChild(wrapper);
+    return wrapper;
+}
+/**
+ * Frame + page:
+ * - frame: white padding around the blue border (this is what we export)
+ * - page: the actual "card" with blue border, logo, info box, canvas, etc.
+ */
+function createFrameAndPage() {
+    // outer white padding (will be captured in PNG)
+    const frame = document.createElement('div');
+    frame.style.background = '#ffffff';
+    frame.style.padding = '12px'; // 👈 white margin outside blue border
+    frame.style.display = 'inline-block'; // shrink to content
+    // inner page with blue border
+    const page = document.createElement('div');
+    page.className = 'card';
+    page.style.width = '1300px';
+    page.style.height = '800px';
+    page.style.padding = '24px';
+    page.style.boxSizing = 'border-box';
+    page.style.margin = '0';
+    page.style.border = '2px solid var(--theme-color)';
+    page.style.position = 'relative';
+    page.style.background = '#ffffff';
+    frame.appendChild(page);
+    return { frame, page };
+}
+function createCanvasWithWrapper() {
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'relative';
+    wrapper.style.width = '1200px';
+    wrapper.style.height = '700px';
+    wrapper.style.margin = '0 auto';
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 700;
+    canvas.style.display = 'block';
+    wrapper.appendChild(canvas);
+    return { wrapper, canvas };
+}
+function createLogo() {
+    const logo = document.createElement('img');
+    logo.src = 'src/images/logo_ntnu.png';
+    logo.alt = 'NTNU Logo';
+    logo.style.position = 'absolute';
+    logo.style.left = '0px';
+    logo.style.bottom = '0px';
+    logo.style.height = '80px';
+    logo.style.pointerEvents = 'none';
+    return logo;
+}
+function createInfoBox() {
+    const infoBox = document.createElement('div');
+    // add a class so we can target it in onclone
+    infoBox.className = 'info-box';
+    infoBox.style.position = 'absolute';
+    infoBox.style.top = '2px';
+    infoBox.style.left = '2px';
+    infoBox.style.width = '380px';
+    infoBox.style.padding = '16px';
+    infoBox.style.background = '#f2f2f2';
+    infoBox.style.borderBottom = '1px solid #ccc';
+    infoBox.style.borderRight = '1px solid #ccc';
+    infoBox.style.boxSizing = 'border-box';
+    infoBox.style.fontSize = '14px';
+    infoBox.style.lineHeight = '1.4';
+    infoBox.style.color = '#333';
+    // IMPORTANT: for html2canvas text spacing
+    infoBox.style.whiteSpace = 'pre-line';
+    infoBox.style.fontFamily = 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+    infoBox.style.letterSpacing = '0px';
+    infoBox.style.wordSpacing = '0px';
+    infoBox.style.pointerEvents = 'none';
+    // Use textContent instead of innerHTML
+    infoBox.textContent = `This diagram shows your group's scores on four dimensions.
+
+The farther out from the center your values are placed on each of the four axes, the better. In your group, discuss what the scores may indicate about the current functioning of the group.
+
+If you have completed the Teamwork Indicator before, you can also compare the current values with the previous ones and discuss what any changes may say about the development in your group.`;
+    return infoBox;
+}
+/**
+ * Export button – exports the given element (frame) so the white padding is included.
+ */
+function createExportButton(group, exportTarget) {
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = `Last ned bilde for gruppe ${group}`;
+    exportBtn.style.marginBottom = '12px';
+    exportBtn.style.padding = '8px 16px';
+    exportBtn.style.cursor = 'pointer';
+    exportBtn.style.background = '#014F9F';
+    exportBtn.style.color = 'white';
+    exportBtn.style.borderRadius = '6px';
+    exportBtn.style.border = 'none';
+    exportBtn.style.fontSize = '14px';
+    exportBtn.style.display = 'block';
+    exportBtn.style.marginLeft = 'auto';
+    exportBtn.style.marginRight = 'auto';
+    exportBtn.onclick = async () => {
+        // wait for fonts and chart to finish rendering
+        const doc = document;
+        if (doc.fonts?.ready) {
+            // fonts.ready is a Promise that resolves when webfonts finish loading
+            await doc.fonts.ready;
+        }
+        await new Promise((r) => requestAnimationFrame(() => r()));
+        await new Promise((r) => requestAnimationFrame(() => r()));
+        const imgCanvas = await html2canvas(exportTarget, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true,
+        });
+        const link = document.createElement('a');
+        link.download = `gruppe-${group}.png`;
+        link.href = imgCanvas.toDataURL('image/png');
+        link.click();
+    };
+    return exportBtn;
+}
+// ---------- Main render function ----------
 function renderRadarCharts(groupNumbers, radarScores) {
     const container = document.getElementById('charts');
     if (!container)
         return;
-    // Clear any old charts
     container.innerHTML = '';
     for (const group of groupNumbers) {
         const scores = radarScores[group];
@@ -127,18 +196,21 @@ function renderRadarCharts(groupNumbers, radarScores) {
             scores.management ?? 0,
             scores.socialCooperation ?? 0,
         ];
-        // Card wrapper
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.minWidth = '350px';
-        const title = document.createElement('h3');
-        title.textContent = `Gruppe ${group}`;
-        card.appendChild(title);
-        const canvas = document.createElement('canvas');
-        canvas.width = 500;
-        canvas.height = 500;
-        card.appendChild(canvas);
-        container.appendChild(card);
+        // Wrapper for button + frame+page
+        const groupWrapper = createGroupWrapper(container);
+        // Frame (white padding) + page (blue border, content)
+        const { frame, page } = createFrameAndPage();
+        groupWrapper.appendChild(frame);
+        // Export button – exports the FRAME so padding is captured
+        const exportBtn = createExportButton(group, frame);
+        groupWrapper.insertBefore(exportBtn, frame);
+        // Radar canvas inside the page
+        const { wrapper: canvasWrapper, canvas } = createCanvasWithWrapper();
+        page.appendChild(canvasWrapper);
+        // Decorations on the page
+        page.appendChild(createInfoBox());
+        page.appendChild(createLogo());
+        // Chart.js radar
         const ctx = canvas.getContext('2d');
         if (!ctx)
             continue;
@@ -151,18 +223,25 @@ function renderRadarCharts(groupNumbers, radarScores) {
                         label: `Gruppe ${group}`,
                         data: values,
                         borderWidth: 2,
-                        pointRadius: 4,
+                        pointRadius: 5,
                         pointHoverRadius: 5,
                         fill: false,
                     },
                 ],
             },
             options: {
-                responsive: true,
+                responsive: false,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: { top: 30, bottom: 30, left: 30, right: 30 },
+                },
                 plugins: {
-                    legend: { position: 'right' },
-                    title: { display: true, text: 'Samarbeidsindikatoren (1–7)' },
+                    legend: { position: 'right', labels: { boxWidth: 30 } },
+                    title: {
+                        display: true,
+                        text: 'Samarbeidsindikatoren (1–7)',
+                        font: { size: 18 },
+                    },
                 },
                 scales: {
                     r: {
@@ -170,17 +249,13 @@ function renderRadarCharts(groupNumbers, radarScores) {
                         max: 7,
                         ticks: {
                             stepSize: 1,
-                            showLabelBackdrop: false,
-                            callback: (v) => v,
+                            backdropColor: 'transparent',
+                            font: { size: 14 },
                         },
-                        grid: {
-                            circular: false,
-                        },
-                        angleLines: {
-                            display: true,
-                        },
+                        grid: { circular: false },
+                        angleLines: { display: true },
                         pointLabels: {
-                            font: { size: 12 },
+                            font: { size: 14, weight: 600 },
                         },
                         startAngle: 0,
                     },
@@ -214,28 +289,22 @@ btn.addEventListener('click', () => {
         const data = readSheetAsMatrix(workbook, sheetName);
         let table = sortRowsByNumericColumn(data, Columns.GroupNumber);
         table = normalizeAllCells(table);
-        // Group detection is done before deleting meta-columns
         const transposedBeforeDelete = transpose2D(table);
         const groupNumbers = getGroupNumbers(transposedBeforeDelete);
         const groups = groupNumbers.length;
         output.appendChild(document.createTextNode(`Found ${groups} groups: ${groupNumbers.join(', ')}`));
         output.appendChild(document.createElement('br'));
         output.appendChild(document.createElement('br'));
-        // Remove meta columns, then transpose to the final working layout
         for (const name of columnNamesToDelete) {
             table = deleteColumnByName(table, name);
         }
         const transposed = transpose2D(table);
         // Text summary per group
         for (const group of groupNumbers) {
-            const managementScore = computeGroupScaleScore(transposed, group, managmentRowNames, 
-            /* reverse */ true, 3);
-            const honestAndDirectScore = computeGroupScaleScore(transposed, group, honestAndDirectRowNames, 
-            /* reverse */ true, 3);
-            const workCommitmentScore = computeGroupScaleScore(transposed, group, workCommitmentRowNames, 
-            /* reverse */ true, 3);
-            const socialCooperationScore = computeGroupScaleScore(transposed, group, socialCooperationRowNames, 
-            /* reverse */ false, 3);
+            const managementScore = computeGroupScaleScore(transposed, group, managmentRowNames, true, 3);
+            const honestAndDirectScore = computeGroupScaleScore(transposed, group, honestAndDirectRowNames, true, 3);
+            const workCommitmentScore = computeGroupScaleScore(transposed, group, workCommitmentRowNames, true, 3);
+            const socialCooperationScore = computeGroupScaleScore(transposed, group, socialCooperationRowNames, false, 3);
             output.appendChild(document.createTextNode(`Group ${group} — ` +
                 `Management: ${managementScore}, ` +
                 `Social Cooperation: ${socialCooperationScore}, ` +
@@ -244,7 +313,6 @@ btn.addEventListener('click', () => {
             output.appendChild(document.createElement('br'));
         }
         output.appendChild(document.createElement('br'));
-        // Render radar charts for all groups using the 4 dimensions
         const radarScores = buildGroupRadarScores(transposed, groupNumbers);
         renderRadarCharts(groupNumbers, radarScores);
     }

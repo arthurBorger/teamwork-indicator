@@ -73,7 +73,6 @@ export function scoreAllGroups(
   transposed: Matrix,
   axisOrder: readonly string[],
   dimensions: DimensionConfig,
-  groupRowName = 'Gruppenummer',
 ): Map<number, (number | null)[]> {
   const groupToCols = indexColumnsByGroup(transposed, groupNumber);
   const out = new Map<number, (number | null)[]>();

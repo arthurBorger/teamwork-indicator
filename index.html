@@ -3,17 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transpose Excel</title>
+    <title>Samarbeidsindikatoren</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        margin: 24px;
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin-bottom: 16px;
+      }
+
+      #output {
+        margin-top: 16px;
+        margin-bottom: 24px;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        background: #fff;
+      }
+
+      .card h3 {
+        margin-top: 0;
+        margin-bottom: 12px;
+      }
+
+      canvas {
+        max-width: 500px;
+        max-height: 500px;
+      }
+    </style>
   </head>
 
   <body>
-    <h1>Transpose an Excel file</h1>
+    <div class="wrap">
+      <h1>Samarbeidsindikatoren – Excel til diagram</h1>
 
-    <input id="file" type="file" accept=".xlsx,.xls" />
-    <button id="transposeBtn" disabled>Transpose & Display</button>
+      <div>
+        <input id="file" type="file" accept=".xlsx,.xls" />
+        <button id="transposeBtn" disabled>Generer resultater</button>
+      </div>
 
-    <div id="output" style="margin-top: 16px"></div>
+      <!-- Text output (group list, scores, etc.) -->
+      <div id="output"></div>
 
+      <!-- Radar charts: one card per group gets injected here by main.ts -->
+      <div id="charts" class="row"></div>
+    </div>
+
+    <!-- Import map for xlsx in your TS/JS -->
     <script type="importmap">
       {
         "imports": {
@@ -22,10 +76,8 @@
       }
     </script>
 
-    <script type="module" src="/dist/main.js"></script>
-
-    <!-- SheetJS (xlsx) global -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js from CDN: provides global Chart used in main.ts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <!-- Compiled TS (ES module) -->
     <script type="module" src="./build/main.js"></script>

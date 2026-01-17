@@ -50,7 +50,7 @@ export function scoreDimensionForGroup(transposed, groupCols, questionRowNames) 
 /**
  * Returns group -> scores in the SAME ORDER as axisOrder
  */
-export function scoreAllGroups(transposed, axisOrder, dimensions, groupRowName = 'Gruppenummer') {
+export function scoreAllGroups(transposed, axisOrder, dimensions) {
     const groupToCols = indexColumnsByGroup(transposed, groupNumber);
     const out = new Map();
     for (const [group, cols] of groupToCols) {

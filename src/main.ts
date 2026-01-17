@@ -1,5 +1,4 @@
 import { transpose2D, type Matrix } from './matrix.js';
-import { toHtmlTable } from './table.js';
 import { getGroupNumbers } from './utils.js';
 import { calcAvgForMember } from './scoring.js';
 import { Columns } from './constants/columns.js';
@@ -13,6 +12,8 @@ import {
   deleteColumnByName,
   normalizeAllCells,
 } from './excel.js';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const Chart: any;
 
 const columnNamesToDelete = [
   Columns.ID,
@@ -74,7 +75,7 @@ function computeGroupScaleScore(
   groupNumber: number,
   rowIndices: number[],
   reverse: boolean,
-  decimals: number = 2,
+  decimals: number = 3,
 ): string {
   const memberCols = getGroupMembers(transposed, groupNumber);
 
@@ -111,12 +112,7 @@ function calculateAverageScores(
     let count = 0;
 
     for (const colIndex of memberCols) {
-      const score = computeMemberScaleScore(
-        transposed,
-        questionRowNumbers,
-        colIndex,
-        reverse,
-      );
+      const score = computeMemberScaleScore(transposed, questionRowNumbers, colIndex, reverse);
 
       if (score != null && !Number.isNaN(score)) {
         sum += score;
@@ -128,6 +124,151 @@ function calculateAverageScores(
   }
 
   return scores;
+}
+
+// ---------------- Radar chart helpers ----------------
+
+type GroupRadarScores = Record<
+  number,
+  {
+    honestAndDirect: number | null;
+    workCommitment: number | null;
+    management: number | null;
+    socialCooperation: number | null;
+  }
+>;
+
+function buildGroupRadarScores(transposed: Matrix, groupNumbers: number[]): GroupRadarScores {
+  // Adjust reverse flags here to match Excel
+  const managementMap = calculateAverageScores(
+    transposed,
+    groupNumbers,
+    managmentRowNames,
+    /* reverse */ true,
+  );
+  const honestMap = calculateAverageScores(
+    transposed,
+    groupNumbers,
+    honestAndDirectRowNames,
+    /* reverse */ true,
+  );
+  const commitmentMap = calculateAverageScores(
+    transposed,
+    groupNumbers,
+    workCommitmentRowNames,
+    /* reverse */ true,
+  );
+  const socialMap = calculateAverageScores(
+    transposed,
+    groupNumbers,
+    socialCooperationRowNames,
+    /* reverse */ false, // "Denne skalaen er snudd"
+  );
+
+  const result: GroupRadarScores = {};
+
+  for (const g of groupNumbers) {
+    result[g] = {
+      honestAndDirect: honestMap.get(g) ?? null,
+      workCommitment: commitmentMap.get(g) ?? null,
+      management: managementMap.get(g) ?? null,
+      socialCooperation: socialMap.get(g) ?? null,
+    };
+  }
+
+  return result;
+}
+
+const radarLabels = [
+  'Ærlig og direkte',
+  'Forpliktelse til arbeidet',
+  'Ledelse',
+  'Sosialt samarbeid',
+];
+
+function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores): void {
+  const container = document.getElementById('charts');
+  if (!container) return;
+
+  // Clear any old charts
+  container.innerHTML = '';
+
+  for (const group of groupNumbers) {
+    const scores = radarScores[group];
+    if (!scores) continue;
+
+    const values = [
+      scores.honestAndDirect ?? 0,
+      scores.workCommitment ?? 0,
+      scores.management ?? 0,
+      scores.socialCooperation ?? 0,
+    ];
+
+    // Card wrapper
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.minWidth = '350px';
+
+    const title = document.createElement('h3');
+    title.textContent = `Gruppe ${group}`;
+    card.appendChild(title);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 500;
+    canvas.height = 500;
+    card.appendChild(canvas);
+
+    container.appendChild(card);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) continue;
+
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: radarLabels,
+        datasets: [
+          {
+            label: `Gruppe ${group}`,
+            data: values,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 5,
+            fill: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' },
+          title: { display: true, text: 'Samarbeidsindikatoren (1–7)' },
+        },
+        scales: {
+          r: {
+            min: 1,
+            max: 7,
+            ticks: {
+              stepSize: 1,
+              showLabelBackdrop: false,
+              callback: (v: string | number) => v,
+            },
+            grid: {
+              circular: false,
+            },
+            angleLines: {
+              display: true,
+            },
+            pointLabels: {
+              font: { size: 12 },
+            },
+            startAngle: 0,
+          },
+        },
+      },
+    });
+  }
 }
 
 // ----------------- Event handlers -----------------
@@ -177,36 +318,35 @@ btn.addEventListener('click', () => {
     }
     const transposed = transpose2D(table);
 
-    // Print one summary line per group
+    // Text summary per group
     for (const group of groupNumbers) {
-      // NOTE: set reverse=true only for the scales that are actually "snudd" in Excel.
       const managementScore = computeGroupScaleScore(
         transposed,
         group,
         managmentRowNames,
         /* reverse */ true,
-        2,
+        3,
       );
       const honestAndDirectScore = computeGroupScaleScore(
         transposed,
         group,
         honestAndDirectRowNames,
         /* reverse */ true,
-        2,
+        3,
       );
       const workCommitmentScore = computeGroupScaleScore(
         transposed,
         group,
         workCommitmentRowNames,
         /* reverse */ true,
-        2,
+        3,
       );
       const socialCooperationScore = computeGroupScaleScore(
         transposed,
         group,
         socialCooperationRowNames,
-        /* reverse */ false, // "Denne skalaen er snudd"
-        2,
+        /* reverse */ false,
+        3,
       );
 
       output.appendChild(
@@ -223,24 +363,9 @@ btn.addEventListener('click', () => {
 
     output.appendChild(document.createElement('br'));
 
-    // Example: show management averages for all groups (numeric map)
-    const managementByGroup = calculateAverageScores(
-      transposed,
-      groupNumbers,
-      managmentRowNames,
-      /* reverse */ false,
-    );
-
-    const managementByGroupText = [...managementByGroup]
-      .map(([group, score]) => `Group ${group}: ${score == null ? 'N/A' : score.toFixed(3)}`)
-      .join(', ');
-
-    output.appendChild(
-      document.createTextNode(`Management averages by group: ${managementByGroupText}`),
-    );
-    output.appendChild(document.createElement('br'));
-
-    output.appendChild(toHtmlTable(transposed));
+    // Render radar charts for all groups using the 4 dimensions
+    const radarScores = buildGroupRadarScores(transposed, groupNumbers);
+    renderRadarCharts(groupNumbers, radarScores);
   } catch (err) {
     alert(err instanceof Error ? err.message : String(err));
   }

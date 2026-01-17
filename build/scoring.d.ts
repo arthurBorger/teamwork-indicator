@@ -6,7 +6,7 @@ export declare function scoreDimensionForGroup(transposed: Matrix, groupCols: re
 /**
  * Returns group -> scores in the SAME ORDER as axisOrder
  */
-export declare function scoreAllGroups(transposed: Matrix, axisOrder: readonly string[], dimensions: DimensionConfig, groupRowName?: string): Map<number, (number | null)[]>;
+export declare function scoreAllGroups(transposed: Matrix, axisOrder: readonly string[], dimensions: DimensionConfig): Map<number, (number | null)[]>;
 /**
  * Average for ONE member (one respondent column) across the given question rows.
  *

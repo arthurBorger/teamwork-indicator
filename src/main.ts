@@ -2,6 +2,7 @@ import { transpose2D, type Matrix } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
+import { radarDimensions, diagramInfo } from './constants/output.js';
 import html2canvas from 'html2canvas';
 
 import {
@@ -16,6 +17,8 @@ import {
 import { Chart } from 'chart.js/auto';
 
 import './style.css';
+
+const radarLabels = radarDimensions.map((d) => d.label); // string[]
 
 const columnNamesToDelete = [
   Columns.ID,
@@ -45,7 +48,28 @@ function getEl<T extends HTMLElement>(id: string): T {
 }
 
 // ---------------- Radar chart helpers ----------------
+function createGroupLabel(group: number): HTMLDivElement {
+  const box = document.createElement('div');
+  box.textContent = `Group ${group}`;
 
+  box.style.position = 'absolute';
+  box.style.top = '40px';
+  box.style.right = '40px';
+  box.style.fontSize = '32px';
+  box.style.fontWeight = '600';
+  box.style.color = '#333';
+  box.style.fontFamily =
+    'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+
+  box.style.pointerEvents = 'none';
+
+  // make layout stable for html2canvas
+  box.style.boxSizing = 'border-box';
+  box.style.whiteSpace = 'nowrap';
+  box.style.lineHeight = '1';
+
+  return box;
+}
 type GroupRadarScores = Record<
   number,
   {
@@ -96,12 +120,25 @@ function buildGroupRadarScores(transposed: Matrix, groupNumbers: number[]): Grou
   return result;
 }
 
-const radarLabels = [
-  'Ærlig og direkte',
-  'Forpliktelse til arbeidet',
-  'Ledelse',
-  'Sosialt samarbeid',
-];
+function createDimensionBox(dim: (typeof radarDimensions)[number]): HTMLDivElement {
+  const box = document.createElement('div');
+  box.className = 'dimension-box';
+
+  box.style.position = 'absolute';
+  box.style.width = '260px';
+  box.style.fontSize = '14px';
+  box.style.lineHeight = '1.4';
+  box.style.color = '#333';
+  box.style.fontFamily = 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+
+  box.style.pointerEvents = 'none';
+
+  // title + text
+  // use innerHTML so we can bold the heading
+  box.innerHTML = `<strong>${dim.label}</strong><br>${dim.description}`;
+
+  return box;
+}
 
 // ---------- Small DOM helper factories ----------
 
@@ -198,12 +235,7 @@ function createInfoBox(): HTMLDivElement {
   infoBox.style.pointerEvents = 'none';
 
   // Use textContent instead of innerHTML
-  infoBox.textContent = `This diagram shows your group's scores on four dimensions.
-
-The farther out from the center your values are placed on each of the four axes, the better. In your group, discuss what the scores may indicate about the current functioning of the group.
-
-If you have completed the Teamwork Indicator before, you can also compare the current values with the previous ones and discuss what any changes may say about the development in your group.`;
-
+  infoBox.textContent = diagramInfo.description;
   return infoBox;
 }
 
@@ -289,6 +321,35 @@ function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores
     page.appendChild(createInfoBox());
     page.appendChild(createLogo());
 
+    // --- Dimension description boxes around the radar ---
+
+    const honestDim = radarDimensions.find((d) => d.id === 'honestAndDirect')!;
+    const workDim = radarDimensions.find((d) => d.id === 'workCommitment')!;
+    const managementDim = radarDimensions.find((d) => d.id === 'management')!;
+    const socialDim = radarDimensions.find((d) => d.id === 'socialCooperation')!;
+
+    const honestBox = createDimensionBox(honestDim);
+    honestBox.style.top = '120px';
+    honestBox.style.left = '730px';
+
+    const workBox = createDimensionBox(workDim);
+    workBox.style.top = '450px';
+    workBox.style.right = '60px';
+
+    const managementBox = createDimensionBox(managementDim);
+    managementBox.style.bottom = '40px';
+    managementBox.style.left = '700px';
+
+    const socialBox = createDimensionBox(socialDim);
+    socialBox.style.top = '460px';
+    socialBox.style.left = '40px';
+
+    page.appendChild(honestBox);
+    page.appendChild(workBox);
+    page.appendChild(managementBox);
+    page.appendChild(socialBox);
+    page.appendChild(createGroupLabel(group));
+
     // Chart.js radar
     const ctx = canvas.getContext('2d');
     if (!ctx) continue;
@@ -296,7 +357,7 @@ function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores
     new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: radarLabels,
+        labels: [...radarLabels],
         datasets: [
           {
             label: `Gruppe ${group}`,
@@ -316,10 +377,31 @@ function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores
         },
         plugins: {
           legend: { position: 'right', labels: { boxWidth: 30 } },
+
           title: {
             display: true,
-            text: 'Samarbeidsindikatoren (1–7)',
-            font: { size: 18 },
+            text: diagramInfo.title,
+            font: {
+              size: 32,
+              weight: 'bold',
+            },
+            padding: {
+              top: 10,
+              bottom: 4,
+            },
+          },
+
+          subtitle: {
+            display: true,
+            text: diagramInfo.subtitle,
+            font: {
+              size: 14,
+              weight: 'normal',
+            },
+            color: '#666',
+            padding: {
+              bottom: 20,
+            },
           },
         },
         scales: {

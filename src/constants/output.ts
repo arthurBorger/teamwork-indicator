@@ -1,3 +1,10 @@
+export const buttonLabels = {
+  uploadExcel: 'Upload Excel File',
+  transposeData: 'Transpose Data',
+  calculateScores: 'Calculate Scores',
+  exportDiagram: 'Download Diagram for Group',
+} as const;
+
 export const diagramInfo = {
   title: 'Teamwork Indicator',
   subtitle: 'Experts in Teamwork',

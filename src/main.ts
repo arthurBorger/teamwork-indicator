@@ -2,7 +2,7 @@ import { transpose2D, type Matrix } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
-import { radarDimensions, diagramInfo } from './constants/output.js';
+import { radarDimensions, diagramInfo, buttonLabels } from './constants/output.js';
 import html2canvas from 'html2canvas';
 const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 
@@ -244,7 +244,7 @@ function createInfoBox(): HTMLDivElement {
  */
 function createExportButton(group: number, exportTarget: HTMLDivElement): HTMLButtonElement {
   const exportBtn = document.createElement('button');
-  exportBtn.textContent = `Last ned bilde for gruppe ${group}`;
+  exportBtn.textContent = buttonLabels.exportDiagram + ` ${group}`;
   exportBtn.style.marginBottom = '12px';
   exportBtn.style.padding = '8px 16px';
   exportBtn.style.cursor = 'pointer';

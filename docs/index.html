@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script type="module" crossorigin src="/teamwork-indicator/assets/index-2eZwd_-g.js"></script>
-    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-DYnLRGyQ.css">
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-DetOwIyM.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-4pqP15Dr.css">
   </head>
   <body class="pl-4 pr-4">
     <div class="">
@@ -12,23 +12,34 @@
       </h1>
 
       <div class="flex flex-wrap items-center gap-4 mb-6">
+        <!-- Choose file button -->
         <label
           for="file"
-          class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium shadow-sm cursor-pointer hover:bg-slate-50"
+          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-(--theme-color) text-white shadow-sm disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
         >
           Choose Excel file ...
         </label>
         <input id="file" type="file" accept=".xlsx,.xls" class="hidden" />
 
-        <label>
-          Day number:
-          <input id="dayInput" type="number" min="1" value="1" />
-        </label>
+        <!-- Pretty day selector -->
+        <div
+          class="inline-flex items-center gap-3 px-4 py-2 rounded-lg border border-slate-300 bg-(--theme-color) text-slate-800"
+        >
+          <span class="text-sm font-medium text-white">Day number</span>
+          <input
+            id="dayInput"
+            type="number"
+            min="1"
+            value="1"
+            class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-(--theme-color) focus:border-(--theme-color)"
+          />
+        </div>
 
+        <!-- Generate button -->
         <button
           id="transposeBtn"
           disabled
-          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-800 transition-colors"
+          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-(--theme-color) text-white shadow-sm disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
         >
           Generate results
         </button>

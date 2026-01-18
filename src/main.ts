@@ -286,6 +286,8 @@ function createExportButton(group: number, exportTarget: HTMLDivElement): HTMLBu
 // ---------- Main render function ----------
 
 function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores): void {
+  const dayInput = document.getElementById('dayInput') as HTMLInputElement;
+  const dayNumber = dayInput?.value || '1';
   const container = document.getElementById('charts');
   if (!container) return;
 
@@ -360,7 +362,7 @@ function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores
         labels: [...radarLabels],
         datasets: [
           {
-            label: `Gruppe ${group}`,
+            label: `Day ${dayNumber}`,
             data: values,
             borderWidth: 2,
             pointRadius: 5,

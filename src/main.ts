@@ -4,6 +4,7 @@ import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
 import { radarDimensions, diagramInfo } from './constants/output.js';
 import html2canvas from 'html2canvas';
+const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 
 import {
   readWorkbookFromFile,
@@ -58,8 +59,7 @@ function createGroupLabel(group: number): HTMLDivElement {
   box.style.fontSize = '32px';
   box.style.fontWeight = '600';
   box.style.color = '#333';
-  box.style.fontFamily =
-    'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+  box.style.fontFamily = 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
 
   box.style.pointerEvents = 'none';
 
@@ -196,7 +196,7 @@ function createCanvasWithWrapper(): { wrapper: HTMLDivElement; canvas: HTMLCanva
 
 function createLogo(): HTMLImageElement {
   const logo = document.createElement('img');
-  logo.src = 'src/images/logo_ntnu.png';
+  logo.src = logoUrl;
   logo.alt = 'NTNU Logo';
   logo.style.position = 'absolute';
   logo.style.left = '0px';

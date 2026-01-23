@@ -3,12 +3,78 @@
   <head>
     <meta charset="UTF-8" />
   </head>
-  <body class="pl-4 pr-4">
-    <div class="">
-      <h1 class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
-        Teamwork Indicator
-      </h1>
+  <body class="pl-20 pr-20">
+<div class="flex justify-between items-start">
+  <h1 class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
+    Teamwork Indicator
+  </h1>
 
+<div class="relative inline-block text-left">
+  <!-- Button -->
+  <button 
+    id="langMenuButton"
+    class="font-display text-xl font-semibold mb-1 mt-6 text-(--theme-color) 
+           px-4 py-1 rounded-lg border border-(--theme-color) hover:bg-(--theme-color)/10 transition hover:cursor-pointer flex items-center gap-2">
+    <span id="langMenuLabel">ENG</span> 🇺🇸
+  </button>
+
+  <!-- Dropdown menu -->
+  <div 
+    id="langMenu"
+    class="absolute  origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
+    
+   <button 
+      type="button"
+      data-lang="ENG"
+      data-flag="🇺🇸"
+      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
+             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
+      ENG 🇺🇸
+    </button>
+
+   <button 
+      type="button"
+      data-lang="NOR"
+      data-flag="🇳🇴"
+      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
+             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
+      NOR 🇳🇴
+    </button>
+  </div>
+</div>
+
+<script>
+  const langMenuButton = document.getElementById("langMenuButton");
+  const langMenu = document.getElementById("langMenu");
+  const langMenuLabel = document.getElementById("langMenuLabel");
+
+  // Toggle dropdown open/close
+  langMenuButton.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent click from bubbling to document
+    langMenu.classList.toggle("hidden");
+  });
+
+  // Handle clicking on an option
+  langMenu.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-lang]");
+    if (!btn) return;
+
+    const lang = btn.dataset.lang;
+    const flag = btn.dataset.flag;
+
+    langMenuLabel.textContent = lang;
+    langMenuButton.innerHTML = `
+      <span id="langMenuLabel">${lang}</span> ${flag}`;
+
+    langMenu.classList.add("hidden");
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", () => {
+    langMenu.classList.add("hidden");
+  });
+</script>
+</div>
       <p class="mb-4 text-slate-800">
         Duplicate the form and share it with the students.
         <br />
@@ -82,6 +148,7 @@
         <img src="src/images/logo_ntnu.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
       </a>
     </div>
+  </div>
 
     <script type="module" src="/src/main.ts"></script>
     <script type="module">

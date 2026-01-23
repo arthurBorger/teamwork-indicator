@@ -1,17 +1,18 @@
 import { type RadarDimensionId } from './radar.js';
 import { type Language } from './language.js';
+export declare function getTitleText(): "Teamwork Indicator" | "Samarbeidsindikatoren";
 export declare function getButtonLabels(): {
     readonly uploadExcel: "Upload Excel File" | "Last opp Excel-fil";
     readonly generateResults: "Generate results" | "Generer resultater";
     readonly calculateScores: "Calculate Scores" | "Beregn poeng";
     readonly exportDiagram: "Download Diagram for Group" | "Last ned diagram for gruppe";
-    readonly dayNumber: "Day number" | "Dag nummer";
-    readonly title: "Teamwork Indicator" | "Samarbeidsindikatoren";
+    readonly dayText: "Day" | "Dag";
 };
 export declare function getDiagramInfo(): {
     readonly title: "Teamwork Indicator" | "Samarbeidsindikatoren";
     readonly subtitle: "Experts in Teamwork" | "Eksperter i team";
     readonly group: "Group" | "Gruppe";
+    readonly day: "Day" | "Dag";
     readonly description: "This diagram shows your group's scores on four dimensions.\n\nThe farther out from the center your values are placed on each of the four axes, the better. In your group, discuss what the scores may indicate about the current functioning of the group.\n\nIf you have completed the Teamwork Indicator before, you can also compare the current values with the previous ones and discuss what any changes may say about the development in your group.\n" | "Diagrammet viser din gruppes skårer på fire dimensjoner.\n    \n    Jo lenger ut fra sentrum verdiene er plassert langs hver av de fire aksene, jo bedre.I gruppen, diskuter hva skårene kan indikere om hvordan gruppen fungerer for tiden. \n    \n    Dersom dere har fylt ut Samarbeidsindikatoren tidligere, kan dere også sammenligne nåværende verdier med de tidligere, og diskutere hva eventuelle endringer kan si om utviklingen i deres gruppe";
 };
 export type RadarDimension = {

@@ -2,7 +2,7 @@ import { transpose2D } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
-import { getDiagramInfo, getButtonLabels, getRadarDimensions, getFormLink, } from './constants/output.js';
+import { getDiagramInfo, getButtonLabels, getRadarDimensions, getFormLink, getTitleText, } from './constants/output.js';
 import html2canvas from 'html2canvas';
 const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn, deleteColumnByName, normalizeAllCells, } from './excel.js';
@@ -36,15 +36,18 @@ function getEl(id) {
     return el;
 }
 function updateStaticTexts() {
-    const { uploadExcel, generateResults, title } = getButtonLabels();
+    const { uploadExcel, generateResults } = getButtonLabels();
+    const title = getTitleText();
+    const { day } = getDiagramInfo();
     const generateResultsBtn = document.getElementById('transposeBtn');
     const chooseFileLabel = document.getElementById('uploadBtn');
-    const dayInput = document.getElementById('dayInput');
+    const dayLabelEl = document.getElementById('dayLabel');
     const titleEl = document.getElementById('title');
-    if (chooseFileLabel && generateResultsBtn && titleEl && dayInput) {
+    if (chooseFileLabel && generateResultsBtn && titleEl && dayLabelEl) {
         titleEl.textContent = title;
         chooseFileLabel.textContent = uploadExcel;
         generateResultsBtn.textContent = generateResults;
+        dayLabelEl.textContent = day;
     }
     // --- form link part ---
     const formLinkConfig = getFormLink();
@@ -260,7 +263,7 @@ function renderRadarCharts(groupNumbers, radarScores) {
     const lang = getLanguage();
     const radarDimensions = getRadarDimensions(lang);
     const radarLabels = radarDimensions.map((d) => d.label);
-    const { title, subtitle } = getDiagramInfo();
+    const { title, subtitle, day } = getDiagramInfo();
     for (const group of groupNumbers) {
         const scores = radarScores[group];
         if (!scores)
@@ -317,7 +320,7 @@ function renderRadarCharts(groupNumbers, radarScores) {
                 labels: radarLabels,
                 datasets: [
                     {
-                        label: `Day ${dayNumber}`, // move "Day" to translations if you want
+                        label: `${day} ${dayNumber}`, // move "Day" to translations if you want
                         data: values,
                         borderWidth: 2,
                         pointRadius: 5,

@@ -27,10 +27,10 @@ export const translations = {
         generateResults: 'Generate results',
         calculateScores: 'Calculate Scores',
         exportDiagram: 'Download Diagram for Group',
-        dayNumber: "Day number",
         title: 'Teamwork Indicator',
         subtitle: 'Experts in Teamwork',
         group: "Group",
+        day: "Day",
         description: `This diagram shows your group's scores on four dimensions.
 
 The farther out from the center your values are placed on each of the four axes, the better. In your group, discuss what the scores may indicate about the current functioning of the group.
@@ -49,10 +49,10 @@ If you have completed the Teamwork Indicator before, you can also compare the cu
         generateResults: 'Generer resultater',
         calculateScores: 'Beregn poeng',
         exportDiagram: 'Last ned diagram for gruppe',
-        dayNumber: "Dag nummer",
         title: 'Samarbeidsindikatoren',
         subtitle: 'Eksperter i team',
         group: "Gruppe",
+        day: "Dag",
         description: `Diagrammet viser din gruppes skårer på fire dimensjoner.
     
     Jo lenger ut fra sentrum verdiene er plassert langs hver av de fire aksene, jo bedre.I gruppen, diskuter hva skårene kan indikere om hvordan gruppen fungerer for tiden. 

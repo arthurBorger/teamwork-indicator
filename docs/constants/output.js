@@ -1,6 +1,10 @@
 import { getLanguage, translations } from './language.js';
 import { radarDimensionIds } from './radar.js';
 import { radarDimensionTranslations } from './language.js';
+export function getTitleText() {
+    const lang = getLanguage();
+    return translations[lang].title;
+}
 export function getButtonLabels() {
     const lang = getLanguage();
     const t = translations[lang];
@@ -9,17 +13,17 @@ export function getButtonLabels() {
         generateResults: t.generateResults,
         calculateScores: t.calculateScores,
         exportDiagram: t.exportDiagram,
-        dayNumber: t.dayNumber,
-        title: t.title,
+        dayText: t.day,
     };
 }
 export function getDiagramInfo() {
     const lang = getLanguage();
     const t = translations[lang];
     return {
-        title: t.title,
+        title: getTitleText(),
         subtitle: t.subtitle,
         group: t.group,
+        day: t.day,
         description: t.description,
     };
 }

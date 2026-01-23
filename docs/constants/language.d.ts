@@ -20,10 +20,10 @@ export declare const translations: {
         readonly generateResults: "Generate results";
         readonly calculateScores: "Calculate Scores";
         readonly exportDiagram: "Download Diagram for Group";
-        readonly dayNumber: "Day number";
         readonly title: "Teamwork Indicator";
         readonly subtitle: "Experts in Teamwork";
         readonly group: "Group";
+        readonly day: "Day";
         readonly description: "This diagram shows your group's scores on four dimensions.\n\nThe farther out from the center your values are placed on each of the four axes, the better. In your group, discuss what the scores may indicate about the current functioning of the group.\n\nIf you have completed the Teamwork Indicator before, you can also compare the current values with the previous ones and discuss what any changes may say about the development in your group.\n";
     };
     readonly NOR: {
@@ -37,10 +37,10 @@ export declare const translations: {
         readonly generateResults: "Generer resultater";
         readonly calculateScores: "Beregn poeng";
         readonly exportDiagram: "Last ned diagram for gruppe";
-        readonly dayNumber: "Dag nummer";
         readonly title: "Samarbeidsindikatoren";
         readonly subtitle: "Eksperter i team";
         readonly group: "Gruppe";
+        readonly day: "Dag";
         readonly description: "Diagrammet viser din gruppes skårer på fire dimensjoner.\n    \n    Jo lenger ut fra sentrum verdiene er plassert langs hver av de fire aksene, jo bedre.I gruppen, diskuter hva skårene kan indikere om hvordan gruppen fungerer for tiden. \n    \n    Dersom dere har fylt ut Samarbeidsindikatoren tidligere, kan dere også sammenligne nåværende verdier med de tidligere, og diskutere hva eventuelle endringer kan si om utviklingen i deres gruppe";
     };
 };

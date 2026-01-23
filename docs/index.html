@@ -2,15 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script type="module" crossorigin src="/teamwork-indicator/assets/index-DetOwIyM.js"></script>
-    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-4pqP15Dr.css" />
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-Dm56Q9Dj.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BkTX9-TF.css">
   </head>
-  <body class="pl-4 pr-4">
-    <div class="">
-      <h1 class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
-        Teamwork Indicator
-      </h1>
-      <p class="mb-4 text-slate-800">
+  <body class="pl-20 pr-20">
+<div class="flex justify-between items-start">
+  <h1 id="title" class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
+    Teamwork Indicator
+  </h1>
+
+<div class="relative inline-block text-left">
+  <!-- Button -->
+  <button 
+    id="langMenuButton"
+    class="font-display text-xl font-semibold mb-1 mt-6 text-(--theme-color) 
+           px-4 py-1 rounded-lg border border-(--theme-color) hover:bg-(--theme-color)/10 transition hover:cursor-pointer flex items-center gap-2">
+    <span id="langMenuLabel">ENG</span> 🇺🇸
+  </button>
+
+  <!-- Dropdown menu -->
+  <div 
+    id="langMenu"
+    class="absolute  origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
+    
+   <button 
+      type="button"
+      data-lang="ENG"
+      data-flag="🇺🇸"
+      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
+             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
+      ENG 🇺🇸
+    </button>
+
+   <button 
+      type="button"
+      data-lang="NOR"
+      data-flag="🇳🇴"
+      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
+             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
+      NOR 🇳🇴
+    </button>
+  </div>
+</div>
+
+</div>
+      <p id="formLinkContainer" class="mb-4 text-slate-800">
         Duplicate the form and share it with the students.
         <br />
 
@@ -35,9 +71,11 @@
           Form (English)
         </a>
       </p>
+
       <div class="flex flex-wrap items-center gap-4 mb-6">
         <!-- Choose file button -->
         <label
+        id="uploadBtn"
           for="file"
           class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-(--theme-color) text-white shadow-sm disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
         >
@@ -49,7 +87,7 @@
         <div
           class="inline-flex items-center gap-3 px-4 py-2 rounded-lg border border-slate-300 bg-(--theme-color) text-slate-800"
         >
-          <span class="text-sm font-medium text-white">Day number</span>
+          <span id="dayLabel" class="text-sm font-medium text-white">Day number</span>
           <input
             id="dayInput"
             type="number"
@@ -79,12 +117,10 @@
       class="fixed bottom-0 left-0 z-50 w-full h-16 bg-(--theme-color) flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
     >
       <a href="https://www.ntnu.no/eit" target="_blank" rel="noopener noreferrer">
-        <img
-          src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png"
-          alt="Logo"
-          class="h-10 object-contain cursor-pointer"
-        />
+        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
       </a>
     </div>
+  </div>
+
   </body>
 </html>

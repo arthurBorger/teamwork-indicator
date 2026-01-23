@@ -2,13 +2,13 @@ import { transpose2D } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
 import { Columns } from './constants/columns.js';
-import { radarDimensions, diagramInfo, buttonLabels } from './constants/output.js';
+import { getDiagramInfo, getButtonLabels, getRadarDimensions, getFormLink, } from './constants/output.js';
 import html2canvas from 'html2canvas';
 const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn, deleteColumnByName, normalizeAllCells, } from './excel.js';
 import { Chart } from 'chart.js/auto';
 import './style.css';
-const radarLabels = radarDimensions.map((d) => d.label); // string[]
+import { getLanguage, onLanguageChange } from './constants/language.js';
 const columnNamesToDelete = [
     Columns.ID,
     Columns.Start,
@@ -26,16 +26,58 @@ const socialCooperationRowNames = [6, 9, 12, 14, 18];
 const honestAndDirectRowNames = [3, 7, 10, 15, 19];
 const workCommitmentRowNames = [1, 4, 11, 16, 20];
 let workbook = null;
+// store last data so we can re-render on language change
+let lastGroupNumbers = null;
+let lastRadarScores = null;
 function getEl(id) {
     const el = document.getElementById(id);
     if (!el)
         throw new Error(`Missing element #${id}`);
     return el;
 }
+function updateStaticTexts() {
+    const { uploadExcel, generateResults, title } = getButtonLabels();
+    const generateResultsBtn = document.getElementById('transposeBtn');
+    const chooseFileLabel = document.getElementById('uploadBtn');
+    const dayInput = document.getElementById('dayInput');
+    const titleEl = document.getElementById('title');
+    if (chooseFileLabel && generateResultsBtn && titleEl && dayInput) {
+        titleEl.textContent = title;
+        chooseFileLabel.textContent = uploadExcel;
+        generateResultsBtn.textContent = generateResults;
+    }
+    // --- form link part ---
+    const formLinkConfig = getFormLink();
+    const formLinkContainer = document.getElementById('formLinkContainer');
+    if (formLinkContainer) {
+        formLinkContainer.innerHTML = ''; // clear old content
+        // Instruction line
+        const instruction = document.createTextNode(formLinkConfig.instruction);
+        formLinkContainer.appendChild(instruction);
+        // Line break
+        formLinkContainer.appendChild(document.createElement('br'));
+        formLinkContainer.appendChild(document.createElement('br'));
+        // <strong>LANG:</strong>
+        const strong = document.createElement('strong');
+        strong.textContent = `${formLinkConfig.languageLabel}:`;
+        formLinkContainer.appendChild(strong);
+        // space between "LANG:" and the link
+        formLinkContainer.appendChild(document.createTextNode(' '));
+        // <a href="...">Link text</a>
+        const link = document.createElement('a');
+        link.href = formLinkConfig.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'text-blue-600 underline';
+        link.textContent = formLinkConfig.linkText;
+        formLinkContainer.appendChild(link);
+    }
+}
 // ---------------- Radar chart helpers ----------------
 function createGroupLabel(group) {
     const box = document.createElement('div');
-    box.textContent = `Group ${group}`;
+    // If you want this translated later, move "Group" into translations
+    box.textContent = `${getDiagramInfo().group} ${group}`;
     box.style.position = 'absolute';
     box.style.top = '40px';
     box.style.right = '40px';
@@ -80,8 +122,6 @@ function createDimensionBox(dim) {
     box.style.color = '#333';
     box.style.fontFamily = 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
     box.style.pointerEvents = 'none';
-    // title + text
-    // use innerHTML so we can bold the heading
     box.innerHTML = `<strong>${dim.label}</strong><br>${dim.description}`;
     return box;
 }
@@ -165,7 +205,8 @@ function createInfoBox() {
     infoBox.style.wordSpacing = '0px';
     infoBox.style.pointerEvents = 'none';
     // Use textContent instead of innerHTML
-    infoBox.textContent = diagramInfo.description;
+    const { description } = getDiagramInfo();
+    infoBox.textContent = description;
     return infoBox;
 }
 /**
@@ -173,7 +214,8 @@ function createInfoBox() {
  */
 function createExportButton(group, exportTarget) {
     const exportBtn = document.createElement('button');
-    exportBtn.textContent = buttonLabels.exportDiagram + ` ${group}`;
+    const { exportDiagram } = getButtonLabels();
+    exportBtn.textContent = `${exportDiagram} ${group}`;
     exportBtn.style.marginBottom = '12px';
     exportBtn.style.padding = '8px 16px';
     exportBtn.style.cursor = 'pointer';
@@ -214,6 +256,11 @@ function renderRadarCharts(groupNumbers, radarScores) {
     if (!container)
         return;
     container.innerHTML = '';
+    // cache language-related data once per render
+    const lang = getLanguage();
+    const radarDimensions = getRadarDimensions(lang);
+    const radarLabels = radarDimensions.map((d) => d.label);
+    const { title, subtitle } = getDiagramInfo();
     for (const group of groupNumbers) {
         const scores = radarScores[group];
         if (!scores)
@@ -267,10 +314,10 @@ function renderRadarCharts(groupNumbers, radarScores) {
         new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: [...radarLabels],
+                labels: radarLabels,
                 datasets: [
                     {
-                        label: `Day ${dayNumber}`,
+                        label: `Day ${dayNumber}`, // move "Day" to translations if you want
                         data: values,
                         borderWidth: 2,
                         pointRadius: 5,
@@ -289,7 +336,7 @@ function renderRadarCharts(groupNumbers, radarScores) {
                     legend: { position: 'right', labels: { boxWidth: 30 } },
                     title: {
                         display: true,
-                        text: diagramInfo.title,
+                        text: title,
                         font: {
                             size: 32,
                             weight: 'bold',
@@ -301,7 +348,7 @@ function renderRadarCharts(groupNumbers, radarScores) {
                     },
                     subtitle: {
                         display: true,
-                        text: diagramInfo.subtitle,
+                        text: subtitle,
                         font: {
                             size: 14,
                             weight: 'normal',
@@ -333,6 +380,14 @@ function renderRadarCharts(groupNumbers, radarScores) {
         });
     }
 }
+// ----------------- Language change: re-render charts -----------------
+updateStaticTexts();
+onLanguageChange(() => {
+    updateStaticTexts();
+    if (lastGroupNumbers && lastRadarScores) {
+        renderRadarCharts(lastGroupNumbers, lastRadarScores);
+    }
+});
 // ----------------- Event handlers -----------------
 fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
@@ -383,6 +438,9 @@ btn.addEventListener('click', () => {
         }
         output.appendChild(document.createElement('br'));
         const radarScores = buildGroupRadarScores(transposed, groupNumbers);
+        // store last data for re-render on language change
+        lastGroupNumbers = groupNumbers;
+        lastRadarScores = radarScores;
         renderRadarCharts(groupNumbers, radarScores);
     }
     catch (err) {

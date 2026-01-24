@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script type="module" crossorigin src="/teamwork-indicator/assets/index-Dm56Q9Dj.js"></script>
-    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BkTX9-TF.css">
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-CCwOQm2W.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-Bi1h_J2N.css">
   </head>
   <body class="pl-20 pr-20">
 <div class="flex justify-between items-start">
@@ -44,35 +44,72 @@
     </button>
   </div>
 </div>
-
 </div>
+
+     
+
+    </div>
+
+    <div
+      id="bottomBar"
+      class="fixed bottom-0 left-0 z-50 w-full h-16 bg-(--theme-color) flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+    >
+      <a href="https://www.ntnu.no/eit" target="_blank" rel="noopener noreferrer">
+        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
+      </a>
+    </div>
+  </div>
+
+  <!-- Tabs wrapper -->
+<div class="mt-6">
+  <!-- Tab buttons -->
+  <div class="border-b border-slate-200 mb-4">
+    <nav class="-mb-px flex gap-4" aria-label="Tabs">
+      <button
+        type="button"
+        id="instructions-tab-id"
+        data-tab="instructions"
+        class="hover:cursor-pointer tab-btn border-b-2 border-(--theme-color) text-(--theme-color) px-3 py-2 text-sm font-medium"
+        aria-current="page"
+      >
+        Instructions
+      </button>
+
+      <button
+        type="button"
+        id="upload-tab-id"
+        data-tab="upload"
+        class="hover:cursor-pointer tab-btn border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-3 py-2 text-sm font-medium"
+      >
+        Upload
+      </button>
+
+      <button
+        type="button"
+        id="results-tab-id"
+        data-tab="results"
+        class="hover:cursor-pointer tab-btn border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-3 py-2 text-sm font-medium"
+      >
+        Results
+      </button>
+    </nav>
+  </div>
+
+  <!-- Tab panels -->
+  <div class="space-y-6 cursor-pointer">
+    <!-- Instructions panel -->
+    <section id="instructions-id" data-tab-panel="instructions">
+      <!-- move your instructions / formLinkContainer here -->
       <p id="formLinkContainer" class="mb-4 text-slate-800">
         Duplicate the form and share it with the students.
-        <br />
-
-        <strong>NORSK:</strong>
-        <a
-          href="https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUN09NRzVVNzhBU1I1MjAwVURVR1I2QVZYSi4u&sharetoken=IvfpTLpSbvvBb7W7z8Hc"
-          class="text-blue-600 underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Skjema (Norsk)
-        </a>
-        <br />
-
-        <strong>ENGELSK:</strong>
-        <a
-          href="https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUMVFZTDBXQ1g1SUVFU0VFUzVYQzVTUlo5QS4u&sharetoken=W3wI2DTUKPr50lllaP5x"
-          class="text-blue-600 underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Form (English)
-        </a>
+        
       </p>
+    </section>
 
-      <div class="flex flex-wrap items-center gap-4 mb-6">
+    <!-- Upload panel -->
+    <section data-tab-panel="upload" class="hidden">
+      <!-- move your existing upload controls here -->
+        <div class="flex flex-wrap items-center gap-4 mb-6">
         <!-- Choose file button -->
         <label
         id="uploadBtn"
@@ -106,21 +143,17 @@
           Generate results
         </button>
       </div>
+      
+    </section>
 
-      <div id="output" class="mt-2 mb-6 text-sm leading-relaxed text-slate-800 space-y-2"></div>
+    <!-- Results panel -->
+    <section data-tab-panel="results" class="hidden">
+      <!-- move your #output and #charts here -->
 
       <div id="charts" class="flex flex-wrap gap-6 items-start"></div>
-    </div>
-
-    <div
-      id="bottomBar"
-      class="fixed bottom-0 left-0 z-50 w-full h-16 bg-(--theme-color) flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
-    >
-      <a href="https://www.ntnu.no/eit" target="_blank" rel="noopener noreferrer">
-        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
-      </a>
-    </div>
+    </section>
   </div>
+</div>
 
   </body>
 </html>

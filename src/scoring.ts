@@ -130,18 +130,23 @@ export function calcAvgForMember(
 /**
  * Average score for ONE member (one column) on a given scale.
  * Optionally reverse the scale.
+ * 
+ * - If member has no valid answers → treat their score as 0 (not "missing").
  */
 function computeMemberScaleScore(
   transposed: Matrix,
   rowIndices: number[],
   colIndex: number,
   reverse: boolean,
-): number | null {
-  const raw = calcAvgForMember(transposed, rowIndices, colIndex);
-  if (raw == null) return null;
-  return reverse ? calculateSafeScore(raw) : raw;
-}
+): number {
+  const raw = calcAvgForMember(transposed, rowIndices, colIndex); // number | null
 
+  // Excel: if no answers at all → 0
+  const base = raw ?? 0;
+
+  // Reverse scale if needed (calculateSafeScore never returns null for a real number)
+  return reverse ? calculateSafeScore(base)! : base;
+}
 /**
  * Numeric group averages for all groups for a given scale.
  * Returns raw numbers in a Map for further processing.

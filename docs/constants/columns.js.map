@@ -1,0 +1,1 @@
+{"version":3,"file":"columns.js","sourceRoot":"","sources":["../../src/constants/columns.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,OAAO,GAAG;IACrB,WAAW,EAAE,cAAc;IAC3B,EAAE,EAAE,IAAI;IACR,KAAK,EAAE,gBAAgB;IACvB,GAAG,EAAE,sBAAsB;IAC3B,KAAK,EAAE,eAAe;IACtB,IAAI,EAAE,MAAM;IACZ,WAAW,EAAE,6BAA6B;CAClC,CAAC"}

@@ -1,15 +1,26 @@
 {
-  // Format on save
+  // Format files automatically on save
   "editor.formatOnSave": true,
 
   // Use Prettier as the formatter
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-  // Let ESLint apply auto-fixable rules on save
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
+  // Prettier should format HTML
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
-  // Ensure ESLint runs on TS files
-  "eslint.validate": ["javascript", "typescript"]
+  // Run ESLint auto-fixes on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Makes VS Code actually run ESLint on these file types
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
 }

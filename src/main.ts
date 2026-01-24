@@ -1,6 +1,6 @@
 import { transpose2D, type Matrix } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
-import { calculateAverageScores, computeGroupScaleScore } from './scoring.js';
+import { calculateAverageScores } from './scoring.js';
 import { Columns } from './constants/columns.js';
 import {
   getDiagramInfo,
@@ -50,6 +50,103 @@ let workbook: Workbook | null = null;
 let lastGroupNumbers: number[] | null = null;
 let lastRadarScores: GroupRadarScores | null = null;
 
+// ---------- Simple preview modal (singleton) ----------
+const previewModal = document.createElement('div');
+previewModal.id = 'previewModal';
+previewModal.style.position = 'fixed';
+previewModal.style.inset = '0';
+previewModal.style.background = 'rgba(0, 0, 0, 0.6)';
+previewModal.style.display = 'none';
+previewModal.style.alignItems = 'center';
+previewModal.style.justifyContent = 'center';
+previewModal.style.zIndex = '9999';
+
+const previewInner = document.createElement('div');
+previewInner.style.background = '#ffffff';
+previewInner.style.padding = '16px';
+previewInner.style.borderRadius = '8px';
+previewInner.style.maxWidth = '90vw';
+previewInner.style.maxHeight = '90vh';
+previewInner.style.boxSizing = 'border-box';
+previewInner.style.display = 'flex';
+previewInner.style.flexDirection = 'column';
+previewInner.style.gap = '8px';
+
+const previewImg = document.createElement('img');
+previewImg.id = 'previewImage';
+previewImg.style.maxWidth = '100%';
+previewImg.style.maxHeight = '80vh';
+previewImg.style.objectFit = 'contain';
+previewImg.alt = 'Diagram preview';
+
+const closePreviewBtn = document.createElement('button');
+closePreviewBtn.innerHTML = `
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+`;
+closePreviewBtn.style.alignSelf = 'flex-end';
+closePreviewBtn.style.padding = '6px 12px';
+closePreviewBtn.style.border = 'none';
+closePreviewBtn.style.borderRadius = '4px';
+closePreviewBtn.style.background = '#014F9F';
+closePreviewBtn.style.color = '#fff';
+closePreviewBtn.style.cursor = 'pointer';
+
+closePreviewBtn.addEventListener('click', () => {
+  previewModal.style.display = 'none';
+});
+
+// Close when clicking the dark background
+previewModal.addEventListener('click', (e) => {
+  if (e.target === previewModal) {
+    previewModal.style.display = 'none';
+  }
+});
+
+previewInner.appendChild(closePreviewBtn);
+previewInner.appendChild(previewImg);
+previewModal.appendChild(previewInner);
+document.body.appendChild(previewModal);
+
+function createPreviewButton(group: number, exportTarget: HTMLDivElement): HTMLButtonElement {
+  const previewBtn = document.createElement('button');
+  previewBtn.textContent = `Preview ${group}`;
+
+  previewBtn.style.marginBottom = '12px';
+  previewBtn.style.padding = '8px 16px';
+  previewBtn.style.cursor = 'pointer';
+  previewBtn.style.background = '#ffffff';
+  previewBtn.style.color = '#014F9F';
+  previewBtn.style.borderRadius = '6px';
+  previewBtn.style.border = '1px solid #014F9F';
+  previewBtn.style.fontSize = '14px';
+
+  previewBtn.onclick = async () => {
+    const doc = document as Document & { fonts?: FontFaceSet };
+
+    if (doc.fonts?.ready) {
+      await doc.fonts.ready;
+    }
+    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+
+    const imgCanvas = await html2canvas(exportTarget, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+    });
+
+    const dataUrl = imgCanvas.toDataURL('image/png');
+    previewImg.src = dataUrl;
+    previewModal.style.display = 'flex';
+  };
+
+  return previewBtn;
+}
+
 function getEl<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
   if (!el) throw new Error(`Missing element #${id}`);
@@ -68,7 +165,7 @@ function updateStaticTexts() {
     titleEl.textContent = title;
     chooseFileLabel.textContent = uploadExcel;
     generateResultsBtn.textContent = generateResults;
-    dayLabelEl.textContent = day
+    dayLabelEl.textContent = day;
   }
   // --- form link part ---
   const formLinkConfig = getFormLink();
@@ -214,9 +311,14 @@ function createGroupWrapper(container: HTMLElement): HTMLDivElement {
 function createFrameAndPage(): { frame: HTMLDivElement; page: HTMLDivElement } {
   // outer white padding (will be captured in PNG)
   const frame = document.createElement('div');
+// Make it render, but off-screen
+  frame.style.position = 'absolute';
+  frame.style.left = '-99999px';
+  frame.style.top = '0';
   frame.style.background = '#ffffff';
-  frame.style.padding = '12px'; // 👈 white margin outside blue border
-  frame.style.display = 'inline-block'; // shrink to content
+  frame.style.padding = '12px';
+  frame.style.display = 'inline-block'; // still needed so layout is correct
+
 
   // inner page with blue border
   const page = document.createElement('div');
@@ -347,7 +449,7 @@ function createExportButton(group: number, exportTarget: HTMLDivElement): HTMLBu
 function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores): void {
   const dayInput = document.getElementById('dayInput') as HTMLInputElement;
   const dayNumber = dayInput?.value || '1';
-  const container = document.getElementById('charts');  
+  const container = document.getElementById('charts');
   if (!container) return;
 
   container.innerHTML = '';
@@ -376,9 +478,20 @@ function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores
     const { frame, page } = createFrameAndPage();
     groupWrapper.appendChild(frame);
 
-    // Export button – exports the FRAME so padding is captured
+    // Buttons row: Preview + Export
     const exportBtn = createExportButton(group, frame);
-    groupWrapper.insertBefore(exportBtn, frame);
+    const previewBtn = createPreviewButton(group, frame);
+
+    const buttonRow = document.createElement('div');
+    buttonRow.style.display = 'flex';
+    buttonRow.style.gap = '8px';
+    buttonRow.style.justifyContent = 'flex-end';
+    buttonRow.style.marginBottom = '12px';
+
+    buttonRow.appendChild(previewBtn);
+    buttonRow.appendChild(exportBtn);
+
+    groupWrapper.insertBefore(buttonRow, frame);
 
     // Radar canvas inside the page
     const { wrapper: canvasWrapper, canvas } = createCanvasWithWrapper();
@@ -522,7 +635,6 @@ btn.addEventListener('click', () => {
   if (!workbook) return;
 
   try {
-
     const sheetName = getFirstSheetName(workbook);
     const data = readSheetAsMatrix(workbook, sheetName);
 
@@ -531,7 +643,6 @@ btn.addEventListener('click', () => {
 
     const transposedBeforeDelete = transpose2D(table);
     const groupNumbers = getGroupNumbers(transposedBeforeDelete);
-
 
     for (const name of columnNamesToDelete) {
       table = deleteColumnByName(table, name);

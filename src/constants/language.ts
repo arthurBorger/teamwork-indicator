@@ -33,8 +33,8 @@ export function onLanguageChange(callback: (lang: Language) => void) {
 export const translations = {
   ENG: {
     formLink: {
-      instruction: 'Duplicate the form and share it with the students.',
-      languageLabel: 'ENGLISH',
+      instruction: 'Duplicate the form and share it with the students. Be careful to use the correct link.',
+      languageLabel: 'English Village',
       linkText: 'Form (English)',
       href: 'https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUMVFZTDBXQ1g1SUVFU0VFUzVYQzVTUlo5QS4u&sharetoken=W3wI2DTUKPr50lllaP5x',
     },
@@ -64,8 +64,8 @@ If you have completed the Teamwork Indicator before, you can also compare the cu
 
   NOR: {
     formLink: {
-      instruction: 'Dupliser skjemaet og del lenken med studentene.',
-      languageLabel: 'NORSK', // For <strong>NORSK:</strong>
+      instruction: 'Dupliser skjemaet og del lenken med studentene. Vær nøye med å bruke riktig lenke.',
+      languageLabel: 'Norsk Landsby',
       linkText: 'Skjema (Norsk)',
       href: 'https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUN09NRzVVNzhBU1I1MjAwVURVR1I2QVZYSi4u&sharetoken=IvfpTLpSbvvBb7W7z8Hc',
     },

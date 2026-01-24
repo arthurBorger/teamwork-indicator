@@ -94,7 +94,7 @@
   </div>
 
   <!-- Tab panels -->
-  <div class="space-y-6 cursor-pointer">
+  <div class="space-y-6">
     <!-- Instructions panel -->
     <section id="instructions-id" data-tab-panel="instructions">
       <!-- move your instructions / formLinkContainer here -->
@@ -116,21 +116,24 @@
         >
           Choose Excel file ...
         </label>
+          <!-- Divider -->
+  <div class="w-px h-6 bg-slate-300"></div>
         <input id="file" type="file" accept=".xlsx,.xls" class="hidden" />
 
         <!-- Pretty day selector -->
-        <div
-          class="inline-flex items-center gap-3 px-4 py-2 rounded-lg border border-slate-300 bg-(--theme-color) text-slate-800"
-        >
-          <span id="dayLabel" class="text-sm font-medium text-white">Day number</span>
-          <input
-            id="dayInput"
-            type="number"
-            min="1"
-            value="1"
-            class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-(--theme-color) focus:border-(--theme-color)"
-          />
-        </div>
+        <div class="flex items-center gap-2">
+  <span id="dayLabel" class="text-sm font-medium text-(--theme-color)">Day</span>
+
+  <input
+    id="dayInput"
+    type="number"
+    min="1"
+    class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-center
+           focus:outline-none focus:ring-2 focus:ring-(--theme-color) focus:border-(--theme-color)"
+  />
+</div>
+  <!-- Divider -->
+  <div class="h-6 w-px bg-slate-300"></div>
 
         <!-- Generate button -->
         <button

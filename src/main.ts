@@ -114,7 +114,7 @@ document.body.appendChild(previewModal);
 
 function createPreviewButton(group: number, exportTarget: HTMLDivElement): HTMLButtonElement {
   const previewBtn = document.createElement('button');
-  previewBtn.textContent = `${getButtonLabels().preview} ${group}`;
+  previewBtn.textContent = `${getButtonLabels().preview}`;
 
   previewBtn.style.marginBottom = '0';
   previewBtn.style.padding = '8px 16px';
@@ -311,6 +311,9 @@ function createGroupWrapper(container: HTMLElement): HTMLDivElement {
   const wrapper = document.createElement('div');
   wrapper.style.margin = '24px auto';
   wrapper.style.width = '1300px';
+  wrapper.style.border = '1px solid #e5e7eb';
+  wrapper.style.borderRadius = '8px';
+  wrapper.style.padding = '24px';
   container.appendChild(wrapper);
   return wrapper;
 }

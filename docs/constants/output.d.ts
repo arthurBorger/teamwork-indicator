@@ -6,7 +6,17 @@ export declare function getButtonLabels(): {
     readonly generateResults: "Generate results" | "Generer resultater";
     readonly calculateScores: "Calculate Scores" | "Beregn poeng";
     readonly exportDiagram: "Download Diagram for Group" | "Last ned diagram for gruppe";
+    readonly preview: "Preview" | "Forhåndsvisning";
     readonly dayText: "Day" | "Dag";
+};
+export declare function getTabText(): {
+    readonly instructions: "Instructions";
+    readonly upload: "Upload";
+    readonly results: "Results";
+} | {
+    readonly instructions: "Instruksjoner";
+    readonly upload: "Last opp";
+    readonly results: "Resultater";
 };
 export declare function getDiagramInfo(): {
     readonly title: "Teamwork Indicator" | "Samarbeidsindikatoren";

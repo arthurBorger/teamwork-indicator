@@ -13,8 +13,13 @@ export function getButtonLabels() {
         generateResults: t.generateResults,
         calculateScores: t.calculateScores,
         exportDiagram: t.exportDiagram,
+        preview: t.preview,
         dayText: t.day,
     };
+}
+export function getTabText() {
+    const lang = getLanguage();
+    return translations[lang].tabs;
 }
 export function getDiagramInfo() {
     const lang = getLanguage();

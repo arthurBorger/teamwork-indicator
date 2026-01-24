@@ -16,6 +16,12 @@ export declare const translations: {
             readonly linkText: "Form (English)";
             readonly href: "https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUMVFZTDBXQ1g1SUVFU0VFUzVYQzVTUlo5QS4u&sharetoken=W3wI2DTUKPr50lllaP5x";
         };
+        readonly tabs: {
+            readonly instructions: "Instructions";
+            readonly upload: "Upload";
+            readonly results: "Results";
+        };
+        readonly preview: "Preview";
         readonly uploadExcel: "Upload Excel File";
         readonly generateResults: "Generate results";
         readonly calculateScores: "Calculate Scores";
@@ -33,6 +39,12 @@ export declare const translations: {
             readonly linkText: "Skjema (Norsk)";
             readonly href: "https://forms.office.com/Pages/ShareFormPage.aspx?id=cgahCS-CZ0SluluzdZZ8BUX_PKcMsGBMrXFJ0g588VNUN09NRzVVNzhBU1I1MjAwVURVR1I2QVZYSi4u&sharetoken=IvfpTLpSbvvBb7W7z8Hc";
         };
+        readonly tabs: {
+            readonly instructions: "Instruksjoner";
+            readonly upload: "Last opp";
+            readonly results: "Resultater";
+        };
+        readonly preview: "Forhåndsvisning";
         readonly uploadExcel: "Last opp Excel-fil";
         readonly generateResults: "Generer resultater";
         readonly calculateScores: "Beregn poeng";

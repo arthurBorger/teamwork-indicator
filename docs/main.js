@@ -2,7 +2,7 @@ import { transpose2D } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores } from './scoring.js';
 import { Columns } from './constants/columns.js';
-import { getDiagramInfo, getButtonLabels, getRadarDimensions, getFormLink, getTitleText, } from './constants/output.js';
+import { getDiagramInfo, getButtonLabels, getRadarDimensions, getFormLink, getTitleText, getTabText, } from './constants/output.js';
 import html2canvas from 'html2canvas';
 const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 import { readWorkbookFromFile, getFirstSheetName, readSheetAsMatrix, sortRowsByNumericColumn, deleteColumnByName, normalizeAllCells, } from './excel.js';
@@ -84,8 +84,8 @@ previewModal.appendChild(previewInner);
 document.body.appendChild(previewModal);
 function createPreviewButton(group, exportTarget) {
     const previewBtn = document.createElement('button');
-    previewBtn.textContent = `Preview ${group}`;
-    previewBtn.style.marginBottom = '12px';
+    previewBtn.textContent = `${getButtonLabels().preview} ${group}`;
+    previewBtn.style.marginBottom = '0';
     previewBtn.style.padding = '8px 16px';
     previewBtn.style.cursor = 'pointer';
     previewBtn.style.background = '#ffffff';
@@ -125,11 +125,20 @@ function updateStaticTexts() {
     const chooseFileLabel = document.getElementById('uploadBtn');
     const dayLabelEl = document.getElementById('dayLabel');
     const titleEl = document.getElementById('title');
+    const { instructions, upload, results } = getTabText();
+    const instructionsTab = document.getElementById('instructions-tab-id');
+    const uploadTab = document.getElementById('upload-tab-id');
+    const resultsTab = document.getElementById('results-tab-id');
     if (chooseFileLabel && generateResultsBtn && titleEl && dayLabelEl) {
         titleEl.textContent = title;
         chooseFileLabel.textContent = uploadExcel;
         generateResultsBtn.textContent = generateResults;
         dayLabelEl.textContent = day;
+    }
+    if (instructionsTab && uploadTab && resultsTab) {
+        instructionsTab.textContent = instructions;
+        uploadTab.textContent = upload;
+        resultsTab.textContent = results;
     }
     // --- form link part ---
     const formLinkConfig = getFormLink();
@@ -304,8 +313,26 @@ function createInfoBox() {
 function createExportButton(group, exportTarget) {
     const exportBtn = document.createElement('button');
     const { exportDiagram } = getButtonLabels();
-    exportBtn.textContent = `${exportDiagram} ${group}`;
-    exportBtn.style.marginBottom = '12px';
+    exportBtn.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    ">
+      <span>${exportDiagram} ${group}</span>
+
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </div>
+  `;
+    exportBtn.style.marginBottom = '0'; // let the row handle margins
     exportBtn.style.padding = '8px 16px';
     exportBtn.style.cursor = 'pointer';
     exportBtn.style.background = '#014F9F';
@@ -313,9 +340,7 @@ function createExportButton(group, exportTarget) {
     exportBtn.style.borderRadius = '6px';
     exportBtn.style.border = 'none';
     exportBtn.style.fontSize = '14px';
-    exportBtn.style.display = 'block';
-    exportBtn.style.marginLeft = 'auto';
-    exportBtn.style.marginRight = 'auto';
+    // removed marginLeft:auto; flex layout handles positioning
     exportBtn.onclick = async () => {
         // wait for fonts and chart to finish rendering
         const doc = document;
@@ -336,6 +361,33 @@ function createExportButton(group, exportTarget) {
         link.click();
     };
     return exportBtn;
+}
+function switchToResultsTab() {
+    const resultsTab = document.querySelector('[data-tab="results"]');
+    const uploadTab = document.querySelector('[data-tab="upload"]');
+    const instructionsTab = document.querySelector('[data-tab="instructions"]');
+    const resultsPanel = document.querySelector('[data-tab-panel="results"]');
+    const uploadPanel = document.querySelector('[data-tab-panel="upload"]');
+    const instructionsPanel = document.querySelector('[data-tab-panel="instructions"]');
+    if (!resultsTab || !resultsPanel)
+        return;
+    // Reset tab styles
+    [instructionsTab, uploadTab, resultsTab].forEach((tab) => {
+        if (tab) {
+            tab.classList.remove('text-(--theme-color)', 'border-(--theme-color)');
+            tab.classList.add('text-slate-500', 'border-transparent');
+        }
+    });
+    // Activate results tab
+    resultsTab.classList.remove('text-slate-500', 'border-transparent');
+    resultsTab.classList.add('text-(--theme-color)', 'border-(--theme-color)');
+    // Hide all panels
+    [instructionsPanel, uploadPanel, resultsPanel].forEach((panel) => {
+        if (panel)
+            panel.classList.add('hidden');
+    });
+    // Show results panel
+    resultsPanel.classList.remove('hidden');
 }
 // ---------- Main render function ----------
 function renderRadarCharts(groupNumbers, radarScores) {
@@ -365,17 +417,28 @@ function renderRadarCharts(groupNumbers, radarScores) {
         // Frame (white padding) + page (blue border, content)
         const { frame, page } = createFrameAndPage();
         groupWrapper.appendChild(frame);
-        // Buttons row: Preview + Export
+        // ----- Header row: label + preview (left), download (right) -----
+        const rowText = document.createElement('div');
+        rowText.textContent = `${getDiagramInfo().group} ${group}`;
+        rowText.style.fontSize = '20px';
+        rowText.style.fontWeight = '600';
         const exportBtn = createExportButton(group, frame);
         const previewBtn = createPreviewButton(group, frame);
-        const buttonRow = document.createElement('div');
-        buttonRow.style.display = 'flex';
-        buttonRow.style.gap = '8px';
-        buttonRow.style.justifyContent = 'flex-end';
-        buttonRow.style.marginBottom = '12px';
-        buttonRow.appendChild(previewBtn);
-        buttonRow.appendChild(exportBtn);
-        groupWrapper.insertBefore(buttonRow, frame);
+        const headerRow = document.createElement('div');
+        headerRow.style.display = 'flex';
+        headerRow.style.alignItems = 'center';
+        headerRow.style.justifyContent = 'space-between';
+        headerRow.style.marginBottom = '12px';
+        const leftSide = document.createElement('div');
+        leftSide.style.display = 'flex';
+        leftSide.style.alignItems = 'center';
+        leftSide.style.gap = '16px';
+        leftSide.appendChild(rowText);
+        leftSide.appendChild(previewBtn);
+        headerRow.appendChild(leftSide);
+        headerRow.appendChild(exportBtn);
+        // Insert header row above the hidden frame
+        groupWrapper.insertBefore(headerRow, frame);
         // Radar canvas inside the page
         const { wrapper: canvasWrapper, canvas } = createCanvasWithWrapper();
         page.appendChild(canvasWrapper);
@@ -519,6 +582,7 @@ btn.addEventListener('click', () => {
         lastGroupNumbers = groupNumbers;
         lastRadarScores = radarScores;
         renderRadarCharts(groupNumbers, radarScores);
+        switchToResultsTab();
     }
     catch (err) {
         alert(err instanceof Error ? err.message : String(err));

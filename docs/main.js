@@ -19,7 +19,6 @@ const columnNamesToDelete = [
 ];
 const fileInput = getEl('file');
 const btn = getEl('transposeBtn');
-const output = getEl('output');
 // Row indices (in the transposed matrix) for each scale
 const managmentRowNames = [2, 5, 8, 13, 17];
 const socialCooperationRowNames = [6, 9, 12, 14, 18];
@@ -394,7 +393,6 @@ onLanguageChange(() => {
 // ----------------- Event handlers -----------------
 fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
-    output.innerHTML = '';
     btn.disabled = true;
     workbook = null;
     if (!file)
@@ -411,35 +409,16 @@ btn.addEventListener('click', () => {
     if (!workbook)
         return;
     try {
-        output.innerHTML = '';
         const sheetName = getFirstSheetName(workbook);
         const data = readSheetAsMatrix(workbook, sheetName);
         let table = sortRowsByNumericColumn(data, Columns.GroupNumber);
         table = normalizeAllCells(table);
         const transposedBeforeDelete = transpose2D(table);
         const groupNumbers = getGroupNumbers(transposedBeforeDelete);
-        const groups = groupNumbers.length;
-        output.appendChild(document.createTextNode(`Found ${groups} groups: ${groupNumbers.join(', ')}`));
-        output.appendChild(document.createElement('br'));
-        output.appendChild(document.createElement('br'));
         for (const name of columnNamesToDelete) {
             table = deleteColumnByName(table, name);
         }
         const transposed = transpose2D(table);
-        // Text summary per group
-        for (const group of groupNumbers) {
-            const managementScore = computeGroupScaleScore(transposed, group, managmentRowNames, true, 3);
-            const honestAndDirectScore = computeGroupScaleScore(transposed, group, honestAndDirectRowNames, true, 3);
-            const workCommitmentScore = computeGroupScaleScore(transposed, group, workCommitmentRowNames, true, 3);
-            const socialCooperationScore = computeGroupScaleScore(transposed, group, socialCooperationRowNames, false, 3);
-            output.appendChild(document.createTextNode(`Group ${group} — ` +
-                `Management: ${managementScore}, ` +
-                `Social Cooperation: ${socialCooperationScore}, ` +
-                `Honest & Direct: ${honestAndDirectScore}, ` +
-                `Work Commitment: ${workCommitmentScore}`));
-            output.appendChild(document.createElement('br'));
-        }
-        output.appendChild(document.createElement('br'));
         const radarScores = buildGroupRadarScores(transposed, groupNumbers);
         // store last data for re-render on language change
         lastGroupNumbers = groupNumbers;

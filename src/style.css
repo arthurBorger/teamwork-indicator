@@ -8,3 +8,9 @@
     --font-display: 'Inter', sans-serif;
     --theme-color: #014F9F;
 }
+
+.tab-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: auto;
+}

@@ -1,3 +1,4 @@
+import { questionRows } from './constants/questions.js';
 import { transpose2D, type Matrix } from './matrix.js';
 import { getGroupNumbers } from './utils.js';
 import { calculateAverageScores } from './scoring.js';
@@ -11,6 +12,7 @@ import {
   getTabText,
 } from './constants/output.js';
 import html2canvas from 'html2canvas';
+import { enableTabButton, isResultsEmpty } from './ui/tabs.js';
 const logoUrl = new URL('./images/logo_ntnu.png', import.meta.url).href;
 
 import {
@@ -39,11 +41,7 @@ const columnNamesToDelete = [
 const fileInput = getEl<HTMLInputElement>('file');
 const btn = getEl<HTMLButtonElement>('transposeBtn');
 
-// Row indices (in the transposed matrix) for each scale
-const managmentRowNames = [2, 5, 8, 13, 17];
-const socialCooperationRowNames = [6, 9, 12, 14, 18];
-const honestAndDirectRowNames = [3, 7, 10, 15, 19];
-const workCommitmentRowNames = [1, 4, 11, 16, 20];
+
 
 let workbook: Workbook | null = null;
 
@@ -251,25 +249,25 @@ function buildGroupRadarScores(transposed: Matrix, groupNumbers: number[]): Grou
   const managementMap = calculateAverageScores(
     transposed,
     groupNumbers,
-    managmentRowNames,
+    questionRows.management,
     /* reverse */ true,
   );
   const honestMap = calculateAverageScores(
     transposed,
     groupNumbers,
-    honestAndDirectRowNames,
+    questionRows.honestAndDirect,
     /* reverse */ true,
   );
   const commitmentMap = calculateAverageScores(
     transposed,
     groupNumbers,
-    workCommitmentRowNames,
+    questionRows.workCommitment,
     /* reverse */ true,
   );
   const socialMap = calculateAverageScores(
     transposed,
     groupNumbers,
-    socialCooperationRowNames,
+    questionRows.socialCooperation,
     /* reverse */ false,
   );
 
@@ -733,6 +731,9 @@ btn.addEventListener('click', () => {
     lastRadarScores = radarScores;
 
     renderRadarCharts(groupNumbers, radarScores);
+    if (!isResultsEmpty()) {
+      enableTabButton('results');
+    }
     switchToResultsTab();
   } catch (err) {
     alert(err instanceof Error ? err.message : String(err));

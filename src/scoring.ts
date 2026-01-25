@@ -135,7 +135,7 @@ export function calcAvgForMember(
  */
 function computeMemberScaleScore(
   transposed: Matrix,
-  rowIndices: number[],
+  rowIndices: readonly number[],
   colIndex: number,
   reverse: boolean,
 ): number {
@@ -153,8 +153,8 @@ function computeMemberScaleScore(
  */
 export function calculateAverageScores(
   transposed: Matrix,
-  groupNumbers: number[],
-  questionRowNumbers: number[],
+  groupNumbers: readonly number[],
+  questionRowNumbers: readonly number[],
   reverse: boolean,
 ): Map<number, number | null> {
   const scores = new Map<number, number | null>();

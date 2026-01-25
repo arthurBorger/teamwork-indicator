@@ -1,10 +1,37 @@
-// In main.ts or a separate module that runs on load
+// Function to disable a button in the tab interface
+function disableTabButton(tabName: string) {
+  const btn = document.querySelector<HTMLButtonElement>(
+    `[data-tab="${tabName}"]`
+  );
+  if (btn) {
+    btn.classList.add('tab-disabled');
+    btn.disabled = true;
+  };
+}
+
+export function enableTabButton(tabName: string) {
+  const btn = document.querySelector<HTMLButtonElement>(
+    `[data-tab="${tabName}"]`
+  );
+  if (btn) {
+    btn.classList.remove('tab-disabled');
+    btn.disabled = false;
+  };
+}
+
+export function isResultsEmpty(): boolean {
+  const charts = document.getElementById('charts');
+  return !charts || charts.children.length === 0;
+}
 
 function initTabs() {
   const tabButtons = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
   const panels = document.querySelectorAll<HTMLElement>('[data-tab-panel]');
 
   if (!tabButtons.length || !panels.length) return;
+  if (isResultsEmpty()) {
+        disableTabButton('results');
+      }
 
   function showTab(tabName: string) {
     // Update buttons

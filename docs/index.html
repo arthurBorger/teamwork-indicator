@@ -2,161 +2,151 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script type="module" crossorigin src="/teamwork-indicator/assets/index-CPR3x-4k.js"></script>
-    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BAvooiPs.css">
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-CoJPTYLF.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-RD_P9-Wl.css">
   </head>
   <body class="pl-20 pr-20">
-<div class="flex justify-between items-start">
-  <h1 id="title" class="font-display text-3xl font-semibold mb-6 mt-6 text-(--theme-color)">
-    Teamwork Indicator
-  </h1>
+    <div class="flex items-start justify-between">
+      <h1 id="title" class="font-display mb-6 mt-6 text-3xl font-semibold text-(--theme-color)">
+        Teamwork Indicator
+      </h1>
 
-<div class="relative inline-block text-left">
-  <!-- Button -->
-  <button 
-    id="langMenuButton"
-    class="font-display text-xl font-semibold mb-1 mt-6 text-(--theme-color) 
-           px-4 py-1 rounded-lg border border-(--theme-color) hover:bg-(--theme-color)/10 transition hover:cursor-pointer flex items-center gap-2">
-    <span id="langMenuLabel">ENG</span> 🇺🇸
-  </button>
+      <div class="relative inline-block text-left">
+        <!-- Button -->
+        <button
+          id="langMenuButton"
+          class="font-display mb-1 mt-6 flex items-center gap-2 rounded-lg border border-(--theme-color) px-4 py-1 text-xl font-semibold text-(--theme-color) transition hover:cursor-pointer hover:bg-(--theme-color)/10"
+        >
+          <span id="langMenuLabel">ENG</span> 🇺🇸
+        </button>
 
-  <!-- Dropdown menu -->
-  <div 
-    id="langMenu"
-    class="absolute  origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
-    
-   <button 
-      type="button"
-      data-lang="ENG"
-      data-flag="🇺🇸"
-      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
-             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
-      ENG 🇺🇸
-    </button>
+        <!-- Dropdown menu -->
+        <div
+          id="langMenu"
+          class="absolute z-10 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg hidden"
+        >
+          <button
+            type="button"
+            data-lang="ENG"
+            data-flag="🇺🇸"
+            class="w-full rounded-lg px-4 py-2 text-left font-display text-lg text-(--theme-color) transition hover:cursor-pointer hover:bg-(--theme-color)/10"
+          >
+            ENG 🇺🇸
+          </button>
 
-   <button 
-      type="button"
-      data-lang="NOR"
-      data-flag="🇳🇴"
-      class="w-full text-left px-4 py-2 font-display text-lg text-(--theme-color)
-             hover:bg-(--theme-color)/10 hover:cursor-pointer transition rounded-lg">
-      NOR 🇳🇴
-    </button>
-  </div>
-</div>
-</div>
-
-     
-
+          <button
+            type="button"
+            data-lang="NOR"
+            data-flag="🇳🇴"
+            class="w-full rounded-lg px-4 py-2 text-left font-display text-lg text-(--theme-color) transition hover:cursor-pointer hover:bg-(--theme-color)/10"
+          >
+            NOR 🇳🇴
+          </button>
+        </div>
+      </div>
     </div>
 
     <div
       id="bottomBar"
-      class="fixed bottom-0 left-0 z-50 w-full h-16 bg-(--theme-color) flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+      class="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-center bg-(--theme-color) opacity-0 pointer-events-none transition-opacity duration-300"
     >
       <a href="https://www.ntnu.no/eit" target="_blank" rel="noopener noreferrer">
-        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 object-contain cursor-pointer" />
+        <img src="/teamwork-indicator/assets/logo_ntnu-CqPXl_bI.png" alt="Logo" class="h-10 cursor-pointer object-contain" />
       </a>
     </div>
-  </div>
 
-  <!-- Tabs wrapper -->
-<div class="mt-6">
-  <!-- Tab buttons -->
-  <div class="border-b border-slate-200 mb-4">
-    <nav class="-mb-px flex gap-4" aria-label="Tabs">
-      <button
-        type="button"
-        id="instructions-tab-id"
-        data-tab="instructions"
-        class="hover:cursor-pointer tab-btn border-b-2 border-(--theme-color) text-(--theme-color) px-3 py-2 text-sm font-medium"
-        aria-current="page"
-      >
-        Instructions
-      </button>
+    <!-- Tabs wrapper -->
+    <div class="mt-6">
+      <!-- Tab buttons -->
+      <div class="mb-4 border-b border-slate-200">
+        <nav class="-mb-px flex gap-4" aria-label="Tabs">
+          <button
+            type="button"
+            id="instructions-tab-id"
+            data-tab="instructions"
+            class="tab-btn border-b-2 border-(--theme-color) px-3 py-2 text-sm font-medium text-(--theme-color) hover:cursor-pointer"
+            aria-current="page"
+          >
+            Instructions
+          </button>
 
-      <button
-        type="button"
-        id="upload-tab-id"
-        data-tab="upload"
-        class="hover:cursor-pointer tab-btn border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-3 py-2 text-sm font-medium"
-      >
-        Upload
-      </button>
+          <button
+            type="button"
+            id="upload-tab-id"
+            data-tab="upload"
+            class="tab-btn border-b-2 border-transparent px-3 py-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:cursor-pointer hover:text-slate-700"
+          >
+            Upload
+          </button>
 
-      <button
-        type="button"
-        id="results-tab-id"
-        data-tab="results"
-        class="hover:cursor-pointer tab-btn border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-3 py-2 text-sm font-medium"
-      >
-        Results
-      </button>
-    </nav>
-  </div>
-
-  <!-- Tab panels -->
-  <div class="space-y-6">
-    <!-- Instructions panel -->
-    <section id="instructions-id" data-tab-panel="instructions">
-      <!-- move your instructions / formLinkContainer here -->
-      <p id="formLinkContainer" class="mb-4 text-slate-800">
-        Duplicate the form and share it with the students.
-        
-      </p>
-    </section>
-
-    <!-- Upload panel -->
-    <section data-tab-panel="upload" class="hidden">
-      <!-- move your existing upload controls here -->
-        <div class="flex flex-wrap items-center gap-4 mb-6">
-        <!-- Choose file button -->
-        <label
-        id="uploadBtn"
-          for="file"
-          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-(--theme-color) text-white shadow-sm disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
-        >
-          Choose Excel file ...
-        </label>
-          <!-- Divider -->
-  <div class="w-px h-6 bg-slate-300"></div>
-        <input id="file" type="file" accept=".xlsx,.xls" class="hidden" />
-
-        <!-- Pretty day selector -->
-        <div class="flex items-center gap-2">
-  <span id="dayLabel" class="text-sm font-medium text-(--theme-color)">Day</span>
-
-  <input
-    id="dayInput"
-    type="number"
-    min="1"
-    class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-center
-           focus:outline-none focus:ring-2 focus:ring-(--theme-color) focus:border-(--theme-color)"
-  />
-</div>
-  <!-- Divider -->
-  <div class="h-6 w-px bg-slate-300"></div>
-
-        <!-- Generate button -->
-        <button
-          id="transposeBtn"
-          disabled
-          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-(--theme-color) text-white shadow-sm disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
-        >
-          Generate results
-        </button>
+          <button
+            type="button"
+            id="results-tab-id"
+            data-tab="results"
+            class="tab-btn border-b-2 border-transparent px-3 py-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:cursor-pointer hover:text-slate-700"
+          >
+            Results
+          </button>
+        </nav>
       </div>
-      
-    </section>
 
-    <!-- Results panel -->
-    <section data-tab-panel="results" class="hidden">
-      <!-- move your #output and #charts here -->
+      <!-- Tab panels -->
+      <div class="space-y-6">
+        <!-- Instructions panel -->
+        <section id="instructions-id" data-tab-panel="instructions">
+          <p id="formLinkContainer" class="mb-4 text-slate-800">
+            Duplicate the form and share it with the students.
+          </p>
+        </section>
 
-      <div id="charts" class="flex flex-wrap gap-6 items-start"></div>
-    </section>
-  </div>
-</div>
+        <!-- Upload panel -->
+        <section data-tab-panel="upload" class="hidden">
+          <div class="mb-6 flex flex-wrap items-center gap-4">
+            <!-- Choose file button -->
+            <label
+              id="uploadBtn"
+              for="file"
+              class="inline-flex cursor-pointer items-center rounded-lg bg-(--theme-color) px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-40 hover:bg-slate-800"
+            >
+              Choose Excel file ...
+            </label>
+
+            <!-- Divider -->
+            <div class="h-6 w-px bg-slate-300"></div>
+
+            <input id="file" type="file" accept=".xlsx,.xls" class="hidden" />
+
+            <!-- Pretty day selector -->
+            <div class="flex items-center gap-2">
+              <span id="dayLabel" class="text-sm font-medium text-(--theme-color)">Day</span>
+              <input
+                id="dayInput"
+                type="number"
+                min="1"
+                class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-center text-sm focus:border-(--theme-color) focus:outline-none focus:ring-2 focus:ring-(--theme-color)"
+              />
+            </div>
+
+            <!-- Divider -->
+            <div class="h-6 w-px bg-slate-300"></div>
+
+            <!-- Generate button -->
+            <button
+              id="transposeBtn"
+              disabled
+              class="inline-flex cursor-pointer items-center rounded-lg bg-(--theme-color) px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-40 hover:bg-slate-800"
+            >
+              Generate results
+            </button>
+          </div>
+        </section>
+
+        <!-- Results panel -->
+        <section data-tab-panel="results" class="hidden">
+          <div id="charts" class="flex flex-wrap items-start gap-6"></div>
+        </section>
+      </div>
+    </div>
 
   </body>
 </html>

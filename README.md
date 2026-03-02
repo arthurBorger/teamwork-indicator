@@ -3,9 +3,9 @@
 A web-based tool for analyzing and visualizing team collaboration metrics from survey data. Upload Excel files containing questionnaire responses and generate interactive radar charts showing team performance across four key dimensions.
 ## Demo
 
-<video src="demo/demo_video.mov" controls width="100%"></video>
+![Demo](demo/demo.gif)
 
-See the website: [teamwork-indicator.com](https://arthurborger.github.io/teamwork-indicator/).
+Try out the [website](https://arthurborger.github.io/teamwork-indicator/).
 
 ## Features
 

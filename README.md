@@ -1,4 +1,6 @@
 # Teamwork Indicator
+![GitHub Pages Deployment](https://img.shields.io/github/deployments/arthurBorger/teamwork-indicator/github-pages?label=github%20pages&logo=github)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A web-based tool for analyzing and visualizing team collaboration metrics from survey data. Upload Excel files containing questionnaire responses and generate interactive radar charts showing team performance across four key dimensions.
 ## Demo
@@ -160,7 +162,3 @@ src/
 ├── scoring.ts     # Score calculations
 └── utils.ts       # Utility functions
 ```
-
-## License
-
-MIT

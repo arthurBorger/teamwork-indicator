@@ -1,1 +1,0 @@
-{"version":3,"file":"render_radar.d.ts","sourceRoot":"","sources":["../../src/ui/render_radar.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAC;AAa3D,OAAO,cAAc,CAAC;AAEtB,KAAK,YAAY,GAAG;IAAE,SAAS,EAAE,MAAM,CAAC;IAAC,MAAM,EAAE,gBAAgB,CAAA;CAAE,CAAC;AAEpE,wBAAgB,iBAAiB,CAC/B,YAAY,EAAE,MAAM,EAAE,EACtB,QAAQ,EAAE,YAAY,EAAE,GACvB,IAAI,CA2IN"}

@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script type="module" crossorigin src="/teamwork-indicator/assets/index-CwHo7NYI.js"></script>
-    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BoAxKEsT.css">
+    <script type="module" crossorigin src="/teamwork-indicator/assets/index-CeEzCB-3.js"></script>
+    <link rel="stylesheet" crossorigin href="/teamwork-indicator/assets/index-BahuSV11.css">
   </head>
   <body class="pl-20 pr-20">
     <div class="flex items-start justify-between">
@@ -101,20 +101,15 @@
 
         <!-- Upload panel -->
         <section data-tab-panel="upload" class="hidden">
-          <!-- Upload toolbar (top-right) -->
-          <div class="mb-3 flex items-center justify-between">
-            <div></div>
-            <div class="flex items-center gap-3">
-              <button id="addUploadRow" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--theme-color) text-(--theme-color) hover:bg-(--theme-color)/10 hover:cursor-pointer" title="Add another day">+</button>
-              <button id="generateAllBtn" class="transposeBtn inline-flex cursor-pointer items-center rounded-lg bg-(--theme-color) px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-40 hover:bg-slate-800" disabled>
-                Generate results
-              </button>
-            </div>
-          </div>
-
           <div id="uploadRows" class="space-y-4">
-            <div class="upload-row mb-6 flex flex-wrap items-center justify-center gap-4" data-row-id="0">
-              <label class="uploadBtn inline-flex cursor-pointer items-center rounded-lg bg-(--theme-color) px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-40 hover:bg-slate-800" for="file-0">
+            <div
+              class="upload-row mb-6 flex flex-wrap items-center justify-center gap-4"
+              data-row-id="0"
+            >
+              <label
+                class="uploadBtn inline-flex cursor-pointer items-center rounded-lg bg-(--theme-color) px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-40 hover:bg-slate-800"
+                for="file-0"
+              >
                 Choose Excel file
               </label>
 
@@ -124,14 +119,36 @@
 
               <div class="flex items-center gap-2">
                 <span class="dayLabel text-sm font-medium text-(--theme-color)">Day</span>
-                <input data-day-input type="number" min="1" class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-center text-sm focus:border-(--theme-color) focus:outline-none focus:ring-2 focus:ring-(--theme-color)" />
+                <input
+                  data-day-input
+                  type="number"
+                  min="1"
+                  class="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-center text-sm focus:border-(--theme-color) focus:outline-none focus:ring-2 focus:ring-(--theme-color)"
+                />
               </div>
 
               <div class="h-6 w-px bg-slate-300"></div>
               <button class="removeRowBtn" title="Remove row">X</button>
             </div>
           </div>
-          
+          <div class="flex justify-center mt-2 gap-3">
+            <button
+              id="addUploadRow"
+              class="inline-flex w-8 items-center justify-center rounded-lg border border-(--theme-color) text-(--theme-color) hover:bg-(--theme-color)/10 hover:cursor-pointer"
+              title="Add another day"
+            >
+              +
+            </button>
+            <button
+              id="generateAllBtn"
+              class="transposeBtn inline-flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 disabled:opacity-40"
+              disabled
+            >
+      
+              </svg>
+              Generate results
+            </button>
+          </div>
         </section>
 
         <!-- Results panel -->

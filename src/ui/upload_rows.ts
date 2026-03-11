@@ -35,6 +35,8 @@ const columnNamesToDelete = [
   Columns.LastChanged,
 ];
 
+const redColor = '#EF4444';
+
 export function setupUploadRows(
   onDatasetReady: (dataset: LoadedDataset) => void,
   onRowRemoved?: (info: { rowId: number; dayNumber: string }) => void,
@@ -49,14 +51,25 @@ export function setupUploadRows(
     const fileInput = rowEl.querySelector<HTMLInputElement>('input[type="file"]')!;
     const dayInput = rowEl.querySelector<HTMLInputElement>('input[data-day-input]')!;
     const removeBtn = rowEl.querySelector<HTMLButtonElement>('button.removeRowBtn');
+    const statusEl = ensureStatusEl(rowEl);
 
     fileInput.addEventListener('change', () => {
       updateGenerateAllEnabled();
+      const file = fileInput.files?.[0];
+      if (file) {
+        setRowStatus(
+          statusEl,
+          `Selected: ${file.name} (${humanFileSize(file.size)}), `,
+          'success',
+        );
+      } else {
+        setRowStatus(statusEl, 'No file selected', 'muted');
+      }
     });
 
     // Remove row handler (optional on initial HTML)
     if (removeBtn) {
-      const replacement = createCloseButton('#EF4444', {
+      const replacement = createCloseButton(redColor, {
         onClick: () => {
           const currentDay = dayInput.value || '';
           rowEl.remove();
@@ -68,7 +81,7 @@ export function setupUploadRows(
     } else {
       const divider = document.createElement('div');
       divider.className = 'h-6 w-px bg-slate-300';
-      const closeBtn = createCloseButton('#EF4444', {
+      const closeBtn = createCloseButton(redColor, {
         onClick: () => {
           const currentDay = dayInput.value || '';
           rowEl.remove();
@@ -116,7 +129,8 @@ export function setupUploadRows(
       const scores = buildGroupRadarScores(transposed, groupNumbers);
       onDatasetReady({ rowId: Number(row.dataset.rowId ?? -1), dayNumber: dayInput.value || '1', scores });
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      // Swallow errors silently per request; optionally log:
+      console.error(err);
     }
   }
 
@@ -180,4 +194,52 @@ export function setupUploadRows(
   });
 
   updateGenerateAllEnabled();
+}
+ 
+
+// --- Feedback helpers ---
+function humanFileSize(bytes: number): string {
+  const thresh = 1024;
+  if (bytes < thresh) return `${bytes} B`;
+  const units = ['KB', 'MB', 'GB', 'TB'];
+  let u = -1;
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (bytes >= thresh && u < units.length - 1);
+  return `${bytes.toFixed(bytes >= 10 ? 0 : 1)} ${units[u]}`;
+}
+
+function ensureStatusEl(row: HTMLElement): HTMLSpanElement {
+  let el = row.querySelector<HTMLSpanElement>('span.fileStatus');
+  if (!el) {
+    const divider = document.createElement('div');
+    divider.className = 'h-6 w-px bg-slate-300';
+    el = document.createElement('span');
+    el.className = 'fileStatus text-sm';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    row.appendChild(divider);
+    row.appendChild(el);
+  }
+  return el;
+}
+
+type StatusKind = 'info' | 'success' | 'error' | 'muted';
+function setRowStatus(el: HTMLElement, text: string, kind: StatusKind) {
+  el.textContent = text;
+  el.classList.remove('text-slate-500', 'text-slate-600', 'text-green-600', 'text-red-600');
+  switch (kind) {
+    case 'success':
+      el.classList.add('text-green-600');
+      break;
+    case 'error':
+      el.classList.add('text-red-600');
+      break;
+    case 'muted':
+      el.classList.add('text-slate-500');
+      break;
+    default:
+      el.classList.add('text-slate-600');
+  }
 }

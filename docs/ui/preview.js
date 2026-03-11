@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas';
 import { applyStyles } from './dom.js';
+import { createCloseButton } from './buttons.js';
 // Utility: ensure fonts and layout are ready before rasterizing
 export async function ensureReadyForCanvas() {
     const doc = document;
@@ -45,26 +46,12 @@ function mountPreviewModal() {
         maxHeight: '80vh',
         objectFit: 'contain',
     });
-    const closePreviewBtn = document.createElement('button');
-    closePreviewBtn.innerHTML = `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  `;
-    applyStyles(closePreviewBtn, {
-        alignSelf: 'flex-end',
-        padding: '6px 12px',
-        border: 'none',
-        borderRadius: '4px',
-        background: '#014F9F',
-        color: '#fff',
-        cursor: 'pointer',
-    });
-    closePreviewBtn.addEventListener('click', () => {
-        if (previewModal)
-            previewModal.style.display = 'none';
+    const closePreviewBtn = createCloseButton('#EF4444', {
+        onClick: () => {
+            if (previewModal)
+                previewModal.style.display = 'none';
+        },
+        alignEnd: true,
     });
     const modalRef = previewModal;
     modalRef.addEventListener('click', (e) => {

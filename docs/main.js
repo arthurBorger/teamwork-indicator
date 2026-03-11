@@ -40,5 +40,16 @@ setupUploadRows((dataset) => {
     if (!isResultsEmpty())
         enableTabButton('results');
     switchToResultsTab();
+}, ({ dayNumber }) => {
+    const idx = loaded.findIndex((d) => d.dayNumber === dayNumber);
+    if (idx >= 0)
+        loaded.splice(idx, 1);
+    const groupSet = new Set();
+    for (const ds of loaded) {
+        for (const key of Object.keys(ds.scores))
+            groupSet.add(Number(key));
+    }
+    const groupNumbers = [...groupSet].sort((a, b) => a - b);
+    renderRadarCharts(groupNumbers, loaded);
 });
 //# sourceMappingURL=main.js.map

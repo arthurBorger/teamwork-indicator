@@ -29,22 +29,35 @@ onLanguageChange(() => {
 // ----------------- Event handlers -----------------
 
 // Multi-upload rows: assemble datasets and render overlayed charts
-setupUploadRows((dataset: LoadedDataset) => {
-  // upsert dataset by rowId (day number may change)
-  const existing = loaded.findIndex((d) => d.dayNumber === dataset.dayNumber);
-  const dsEntry = { dayNumber: dataset.dayNumber, scores: dataset.scores };
-  if (existing >= 0) loaded[existing] = dsEntry;
-  else loaded.push(dsEntry);
+setupUploadRows(
+  (dataset: LoadedDataset) => {
+    // upsert dataset by rowId (day number may change)
+    const existing = loaded.findIndex((d) => d.dayNumber === dataset.dayNumber);
+    const dsEntry = { dayNumber: dataset.dayNumber, scores: dataset.scores };
+    if (existing >= 0) loaded[existing] = dsEntry;
+    else loaded.push(dsEntry);
 
-  // Compute union of groups across datasets from their score maps
-  const groupSet = new Set<number>();
-  for (const ds of loaded) {
-    for (const key of Object.keys(ds.scores)) groupSet.add(Number(key));
-  }
-  const groupNumbers = [...groupSet].sort((a, b) => a - b);
+    // Compute union of groups across datasets from their score maps
+    const groupSet = new Set<number>();
+    for (const ds of loaded) {
+      for (const key of Object.keys(ds.scores)) groupSet.add(Number(key));
+    }
+    const groupNumbers = [...groupSet].sort((a, b) => a - b);
 
-  renderRadarCharts(groupNumbers, loaded);
+    renderRadarCharts(groupNumbers, loaded);
 
-  if (!isResultsEmpty()) enableTabButton('results');
-  switchToResultsTab();
-});
+    if (!isResultsEmpty()) enableTabButton('results');
+    switchToResultsTab();
+  },
+  ({ dayNumber }) => {
+    const idx = loaded.findIndex((d) => d.dayNumber === dayNumber);
+    if (idx >= 0) loaded.splice(idx, 1);
+
+    const groupSet = new Set<number>();
+    for (const ds of loaded) {
+      for (const key of Object.keys(ds.scores)) groupSet.add(Number(key));
+    }
+    const groupNumbers = [...groupSet].sort((a, b) => a - b);
+    renderRadarCharts(groupNumbers, loaded);
+  },
+);

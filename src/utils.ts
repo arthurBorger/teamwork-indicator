@@ -2,7 +2,11 @@ import type { Matrix } from './matrix.js';
 import { extractLeadingNumber } from './excel.js';
 import { Columns } from './constants/columns.js';
 
-function findRowByName(matrix: Matrix, rowName: string): unknown[] {
+/**
+ * Returns the first row whose first cell matches `rowName` (as string).
+ * Throws a descriptive error if the row is not found.
+ */
+export function findRowByName(matrix: Matrix, rowName: string): readonly unknown[] {
   const row = matrix.find((r) => String(r?.[0] ?? '') === rowName);
   if (!row) throw new Error(`Row "${rowName}" not found`);
   return row;

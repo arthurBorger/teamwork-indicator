@@ -36,8 +36,8 @@ Try out the [website](https://arthurborger.github.io/teamwork-indicator/).
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 20.19+ or 22.12+
+- npm
 
 ### Installation
 

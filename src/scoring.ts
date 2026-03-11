@@ -1,7 +1,7 @@
 import type { Matrix } from './matrix.js';
 import { extractLeadingNumber } from './excel.js';
 import { Columns } from './constants/columns.js';
-import { getGroupMembers } from './utils.js';
+import { getGroupMembers, findRowByName } from './utils.js';
 
 const groupNumber = Columns.GroupNumber;
 // dimension name -> question row names
@@ -23,11 +23,7 @@ export function calculateSafeScore(avg: number | null): number | null {
   return 8 - avg;
 }
 
-function findRowByName(matrix: Matrix, rowName: string): unknown[] {
-  const row = matrix.find((r) => String(r?.[0] ?? '') === rowName);
-  if (!row) throw new Error(`Row "${rowName}" not found`);
-  return row;
-}
+// findRowByName moved to utils.ts for reuse
 
 export function indexColumnsByGroup(
   transposed: Matrix,

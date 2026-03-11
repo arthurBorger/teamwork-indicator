@@ -1,4 +1,9 @@
 import type { GroupRadarScores } from '../radar/scores.js';
 import '../style.css';
-export declare function renderRadarCharts(groupNumbers: number[], radarScores: GroupRadarScores, dayNumber: string): void;
+type DatasetInput = {
+    dayNumber: string;
+    scores: GroupRadarScores;
+};
+export declare function renderRadarCharts(groupNumbers: number[], datasets: DatasetInput[]): void;
+export {};
 //# sourceMappingURL=render_radar.d.ts.map

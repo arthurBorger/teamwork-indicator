@@ -16,10 +16,11 @@ import {
 import { applyStyles } from './dom.js';
 import '../style.css';
 
+type DatasetInput = { dayNumber: string; scores: GroupRadarScores };
+
 export function renderRadarCharts(
   groupNumbers: number[],
-  radarScores: GroupRadarScores,
-  dayNumber: string,
+  datasets: DatasetInput[],
 ): void {
   const container = document.getElementById('charts');
   if (!container) return;
@@ -32,15 +33,37 @@ export function renderRadarCharts(
   const { title, subtitle, day } = getDiagramInfo();
 
   for (const group of groupNumbers) {
-    const scores = radarScores[group];
-    if (!scores) continue;
-
-    const values = [
-      scores.honestAndDirect ?? 0,
-      scores.workCommitment ?? 0,
-      scores.management ?? 0,
-      scores.socialCooperation ?? 0,
-    ];
+    const palette = ['#2563eb', '#16a34a', '#ef4444', '#a855f7', '#f59e0b', '#10b981'];
+    type ChartDs = {
+      label: string;
+      data: number[];
+      borderWidth: number;
+      pointRadius: number;
+      pointHoverRadius: number;
+      fill: boolean;
+      borderColor: string;
+    };
+    const chartDatasets: ChartDs[] = datasets
+      .map<ChartDs | null>((ds, idx) => {
+        const scores = ds.scores[group];
+        if (!scores) return null;
+        const values = [
+          scores.honestAndDirect ?? 0,
+          scores.workCommitment ?? 0,
+          scores.management ?? 0,
+          scores.socialCooperation ?? 0,
+        ];
+        return {
+          label: `${day} ${ds.dayNumber}`,
+          data: values,
+          borderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 5,
+          fill: false,
+          borderColor: palette[idx % palette.length]!,
+        };
+      })
+      .filter((x): x is ChartDs => Boolean(x));
 
     const groupWrapper = createGroupWrapper(container);
     const { frame, page } = createFrameAndPage();
@@ -112,9 +135,7 @@ export function renderRadarCharts(
       type: 'radar',
       data: {
         labels: radarLabels,
-        datasets: [
-          { label: `${day} ${dayNumber}`, data: values, borderWidth: 2, pointRadius: 5, pointHoverRadius: 5, fill: false },
-        ],
+        datasets: chartDatasets,
       },
       options: {
         responsive: false,
@@ -140,4 +161,3 @@ export function renderRadarCharts(
     });
   }
 }
-

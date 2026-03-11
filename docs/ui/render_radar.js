@@ -4,7 +4,7 @@ import { getDiagramInfo, getRadarDimensions } from '../constants/output.js';
 import { createCanvasWithWrapper, createDimensionBox, createFrameAndPage, createGroupLabel, createGroupWrapper, createInfoBox, createLogo, createExportButton, createPreviewButton, } from './radar_components.js';
 import { applyStyles } from './dom.js';
 import '../style.css';
-export function renderRadarCharts(groupNumbers, radarScores, dayNumber) {
+export function renderRadarCharts(groupNumbers, datasets) {
     const container = document.getElementById('charts');
     if (!container)
         return;
@@ -14,15 +14,29 @@ export function renderRadarCharts(groupNumbers, radarScores, dayNumber) {
     const radarLabels = radarDimensions.map((d) => d.label);
     const { title, subtitle, day } = getDiagramInfo();
     for (const group of groupNumbers) {
-        const scores = radarScores[group];
-        if (!scores)
-            continue;
-        const values = [
-            scores.honestAndDirect ?? 0,
-            scores.workCommitment ?? 0,
-            scores.management ?? 0,
-            scores.socialCooperation ?? 0,
-        ];
+        const palette = ['#2563eb', '#16a34a', '#ef4444', '#a855f7', '#f59e0b', '#10b981'];
+        const chartDatasets = datasets
+            .map((ds, idx) => {
+            const scores = ds.scores[group];
+            if (!scores)
+                return null;
+            const values = [
+                scores.honestAndDirect ?? 0,
+                scores.workCommitment ?? 0,
+                scores.management ?? 0,
+                scores.socialCooperation ?? 0,
+            ];
+            return {
+                label: `${day} ${ds.dayNumber}`,
+                data: values,
+                borderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                fill: false,
+                borderColor: palette[idx % palette.length],
+            };
+        })
+            .filter((x) => Boolean(x));
         const groupWrapper = createGroupWrapper(container);
         const { frame, page } = createFrameAndPage();
         groupWrapper.appendChild(frame);
@@ -79,9 +93,7 @@ export function renderRadarCharts(groupNumbers, radarScores, dayNumber) {
             type: 'radar',
             data: {
                 labels: radarLabels,
-                datasets: [
-                    { label: `${day} ${dayNumber}`, data: values, borderWidth: 2, pointRadius: 5, pointHoverRadius: 5, fill: false },
-                ],
+                datasets: chartDatasets,
             },
             options: {
                 responsive: false,

@@ -1,5 +1,20 @@
 import type { RadarDimensionId } from './radar.js';
 
+/*
+How to use this module:
+
+1. Get current language:
+   const lang = getLanguage();
+
+2. Subscribe to language changes:
+   onLanguageChange((newLang) => {
+     // Update UI texts based on newLang
+   });
+
+3. Access translations:
+   const { formLink, tabs, preview } = translations[lang];
+*/ 
+
 export type Language = 'ENG' | 'NOR';
 const listeners = new Set<(lang: Language) => void>();
 let currentLanguage: Language = 'ENG';
@@ -49,6 +64,7 @@ export const translations = {
     generateResults: 'Generate results',
     calculateScores: 'Calculate Scores',
     exportDiagram: 'Download Diagram for Group',
+    selectedFile: 'Selected file:',
 
     title: 'Teamwork Indicator',
     subtitle: 'Experts in Teamwork',
@@ -79,7 +95,7 @@ If you have completed the Teamwork Indicator before, you can also compare the cu
     generateResults: 'Generer resultater',
     calculateScores: 'Beregn poeng',
     exportDiagram: 'Last ned diagram for gruppe',
-
+    selectedFile: 'Valgt fil:',
 
     title: 'Samarbeidsindikatoren',
     subtitle: 'Eksperter i team',
@@ -87,7 +103,7 @@ If you have completed the Teamwork Indicator before, you can also compare the cu
     day: "Dag",
     description: `Diagrammet viser din gruppes skårer på fire dimensjoner.
     
-    Jo lenger ut fra sentrum verdiene er plassert langs hver av de fire aksene, jo bedre.I gruppen, diskuter hva skårene kan indikere om hvordan gruppen fungerer for tiden. 
+    Jo lenger ut fra sentrum verdiene er plassert langs hver av de fire aksene, jo bedre. I gruppen, diskuter hva skårene kan indikere om hvordan gruppen fungerer for tiden. 
     
     Dersom dere har fylt ut Samarbeidsindikatoren tidligere, kan dere også sammenligne nåværende verdier med de tidligere, og diskutere hva eventuelle endringer kan si om utviklingen i deres gruppe`,
   },

@@ -13,6 +13,7 @@ import { transpose2D } from '../matrix.js';
 import { getGroupNumbers } from '../utils.js';
 import { Columns } from '../constants/columns.js';
 import { buildGroupRadarScores, type GroupRadarScores } from '../radar/scores.js';
+import { getLanguage, translations, onLanguageChange } from '../constants/language.js';
 
 export type LoadedDataset = {
   rowId: number;
@@ -53,18 +54,30 @@ export function setupUploadRows(
     const removeBtn = rowEl.querySelector<HTMLButtonElement>('button.removeRowBtn');
     const statusEl = ensureStatusEl(rowEl);
 
-    fileInput.addEventListener('change', () => {
-      updateGenerateAllEnabled();
+    // Helper: format and apply status text based on current language + input value
+    const updateStatusFromInput = () => {
+      const translation = translations[getLanguage()];
       const file = fileInput.files?.[0];
       if (file) {
-        setRowStatus(
-          statusEl,
-          `Selected: ${file.name} (${humanFileSize(file.size)}), `,
-          'success',
-        );
-      } else {
-        setRowStatus(statusEl, 'No file selected', 'muted');
+        setRowStatus(statusEl, `${translation.selectedFile} ${file.name} (${humanFileSize(file.size)})`, 'success');
       }
+    };
+
+        // Ensure reselecting the same file triggers change and keep UI in sync on cancel
+    fileInput.addEventListener('click', () => {
+      fileInput.value = '';
+      updateStatusFromInput();
+    });
+
+    // Update status when file changes
+    fileInput.addEventListener('change', () => {
+      updateGenerateAllEnabled();
+      updateStatusFromInput();
+    });
+
+    // Re-localize status when language changes
+    const unsubscribeLang = onLanguageChange(() => {
+      updateStatusFromInput();
     });
 
     // Remove row handler (optional on initial HTML)
@@ -72,6 +85,7 @@ export function setupUploadRows(
       const replacement = createCloseButton(redColor, {
         onClick: () => {
           const currentDay = dayInput.value || '';
+          unsubscribeLang();
           rowEl.remove();
           updateGenerateAllEnabled();
           onRowRemoved?.({ rowId, dayNumber: currentDay });
@@ -84,6 +98,7 @@ export function setupUploadRows(
       const closeBtn = createCloseButton(redColor, {
         onClick: () => {
           const currentDay = dayInput.value || '';
+          unsubscribeLang();
           rowEl.remove();
           updateGenerateAllEnabled();
           onRowRemoved?.({ rowId, dayNumber: currentDay });
